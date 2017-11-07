@@ -408,6 +408,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
+        $site = 1;
         // Case: User has everything.
         $this->assertSame(
             [
@@ -417,7 +418,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['return_type' => 'array']
+                ['return_type' => 'array'],
+                $site
             )
         );
         $this->assertSame(
@@ -428,7 +430,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'array']
+                ['validate_all' => true, 'return_type' => 'array'],
+                $site
             )
         );
 
@@ -442,7 +445,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['return_type' => 'array']
+                ['return_type' => 'array'],
+                $site
             )
         );
         $this->assertSame(
@@ -453,7 +457,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'array']
+                ['validate_all' => true, 'return_type' => 'array'],
+                $site
             )
         );
 
@@ -467,7 +472,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['return_type' => 'array']
+                ['return_type' => 'array'],
+                $site
             )
         );
         $this->assertSame(
@@ -478,7 +484,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'array']
+                ['validate_all' => true, 'return_type' => 'array'],
+                $site
             )
         );
 
@@ -492,7 +499,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['return_type' => 'array']
+                ['return_type' => 'array'],
+                $site
             )
         );
         $this->assertSame(
@@ -503,7 +511,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['validate_all' => true, 'return_type' => 'array']
+                ['validate_all' => true, 'return_type' => 'array'],
+                $site
             )
         );
     }
@@ -570,6 +579,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
+        $site = 1;
         // Case: User has everything.
         $this->assertSame(
             [
@@ -582,7 +592,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             )
         );
         $this->assertSame(
@@ -596,7 +607,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'both']
+                ['validate_all' => true, 'return_type' => 'both'],
+                $site
             )
         );
 
@@ -613,7 +625,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             )
         );
         $this->assertSame(
@@ -627,7 +640,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'both']
+                ['validate_all' => true, 'return_type' => 'both'],
+                $site
             )
         );
 
@@ -644,7 +658,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             )
         );
         $this->assertSame(
@@ -658,7 +673,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['validate_all' => true, 'return_type' => 'both']
+                ['validate_all' => true, 'return_type' => 'both'],
+                $site
             )
         );
 
@@ -675,7 +691,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             )
         );
         $this->assertSame(
@@ -689,7 +706,8 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['validate_all' => true, 'return_type' => 'both']
+                ['validate_all' => true, 'return_type' => 'both'],
+                $site
             )
         );
     }
@@ -746,16 +764,19 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
+        $site = 1;
         $this->assertSame(
             $user->ability(
                 ['UserRoleA', 'NonUserRoleB'],
                 ['user_can_a', 'user_cannot_b'],
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             ),
             $user->ability(
                 'UserRoleA,NonUserRoleB',
                 'user_can_a,user_cannot_b',
-                ['return_type' => 'both']
+                ['return_type' => 'both'],
+                $site
             )
         );
     }
@@ -822,16 +843,20 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
+        $site = 1;
         // Case: User has everything.
         $this->assertSame(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
-                [$userPermNameA, $userPermNameB]
+                [$userPermNameA, $userPermNameB],
+                [],
+                $site
             ),
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => false, 'return_type' => 'boolean']
+                ['validate_all' => false, 'return_type' => 'boolean'],
+                $site
             )
         );
 
@@ -840,12 +865,15 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
-                [$userPermNameA, $userPermNameB]
+                [$userPermNameA, $userPermNameB],
+                [],
+                $site
             ),
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => false, 'return_type' => 'boolean']
+                ['validate_all' => false, 'return_type' => 'boolean'],
+                $site
             )
         );
 
@@ -854,12 +882,15 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
-                [$nonUserPermNameA, $userPermNameB]
+                [$nonUserPermNameA, $userPermNameB],
+                [],
+                $site
             ),
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['validate_all' => false, 'return_type' => 'boolean']
+                ['validate_all' => false, 'return_type' => 'boolean'],
+                $site
             )
         );
 
@@ -868,12 +899,15 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
-                [$nonUserPermNameA, $nonUserPermNameB]
+                [$nonUserPermNameA, $nonUserPermNameB],
+                [],
+                $site
             ),
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['validate_all' => false, 'return_type' => 'boolean']
+                ['validate_all' => false, 'return_type' => 'boolean'],
+                $site
             )
         );
     }
@@ -899,12 +933,13 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             HasRoleUser $user,
             array $roles,
             array $perms,
-            array $options
+            array $options,
+            $site
         ) {
             $isExceptionThrown = false;
 
             try {
-                $user->ability($roles, $perms, $options);
+                $user->ability($roles, $perms, $options, $site);
             } catch (InvalidArgumentException $e) {
                 $isExceptionThrown = true;
             }
@@ -922,15 +957,16 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('can')
             ->times(3);
 
+        $site = 1;
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'boolean']));
-        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'array']));
-        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'both']));
-        $this->assertTrue(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'potato']));
+        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'boolean'], $site));
+        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'array'], $site));
+        $this->assertFalse(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'both'], $site));
+        $this->assertTrue(isExceptionThrown($user, ['RoleA'], ['manage_a'], ['return_type' => 'potato'], $site));
     }
 
     public function testAttachRole()
