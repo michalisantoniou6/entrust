@@ -88,7 +88,10 @@ class MigrationCommand extends Command
         $roleUserTable,
         $permissionsTable,
         $permissionRoleTable,
-        $sitesTable
+        $sitesTable,
+        $userFK,
+        $roleFK,
+        $siteFK
     ) {
         $migrationFile = base_path("/database/migrations") . "/" . date('Y_m_d_His') . "_cerberus_setup_tables.php";
 
@@ -100,7 +103,7 @@ class MigrationCommand extends Command
 
 
         $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable',
-            'userKeyName', 'sitesTable');
+            'userKeyName', 'sitesTable', 'userFK', 'roleFK', 'siteFK');
 
         $output = $this->laravel->view->make('cerberus::generators.migration')->with($data)->render();
 

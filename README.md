@@ -36,7 +36,7 @@ composer require michalisantoniou6/cerberus
 Alternatively, you can add just the following to your composer.json. Then run `composer update`:
 
 ```json
-"michalisantoniou6/cerberus": "v2.0"
+"michalisantoniou6/cerberus": "2.*"
 ```
 
 2) Open your `config/app.php` and add the following to the `providers` array:
