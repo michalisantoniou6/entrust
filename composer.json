@@ -58,5 +58,15 @@
       "tests/Middleware/MiddlewareTest.php"
     ]
   },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Michalisantoniou6\\Cerberus\\CerberusServiceProvider"
+      ],
+      "aliases": {
+        "Cerberus": "Michalisantoniou6\\Cerberus\\CerberusFacade"
+      }
+    }
+  },
   "minimum-stability": "dev"
 }
