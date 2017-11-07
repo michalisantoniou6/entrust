@@ -1,54 +1,62 @@
 {
-    "name": "michalisantoniou6/entrust",
-    "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
-    "keywords": ["laravel","illuminate","auth","roles","acl","permission"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Zizaco Zizuini",
-            "email": "zizaco@gmail.com"
-        },
-        {
-            "name": "Andrew Elkins",
-            "homepage": "http://andrewelkins.com"
-        },
-        {
-            "name": "Ben Batschelet",
-            "homepage": "http://github.com/bbatsche"
-        },
-        {
-            "name": "Michele Angioni",
-            "email": "michele.angioni@gmail.com"
-        },
-        {
-            "name": "Michalis Antoniou",
-            "email": "michalisantoniou6@gmail.com"
-        }
+  "name": "michalisantoniou6/laravel-cerberus",
+  "description": "This package provides a flexible way to add Multi-tenant Role-based Permissions to Laravel 5.*",
+  "keywords": [
+    "laravel",
+    "illuminate",
+    "auth",
+    "roles",
+    "acl",
+    "permission",
+    "multi-tenant"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Zizaco Zizuini",
+      "email": "zizaco@gmail.com"
+    },
+    {
+      "name": "Andrew Elkins",
+      "homepage": "http://andrewelkins.com"
+    },
+    {
+      "name": "Ben Batschelet",
+      "homepage": "http://github.com/bbatsche"
+    },
+    {
+      "name": "Michele Angioni",
+      "email": "michele.angioni@gmail.com"
+    },
+    {
+      "name": "Michalis Antoniou",
+      "email": "michalisantoniou6@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "illuminate/console": "~5.0",
+    "illuminate/support": "~5.0",
+    "illuminate/cache": "~5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.1",
+    "mockery/mockery": "dev-master",
+    "illuminate/database": "~5.0",
+    "sami/sami": "dev-master"
+  },
+  "autoload": {
+    "classmap": [
+      "src/commands"
     ],
-    "require": {
-        "php": ">=5.5.0",
-        "illuminate/console": "~5.0",
-        "illuminate/support": "~5.0",
-        "illuminate/cache": "~5.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "~4.1",
-        "mockery/mockery": "dev-master",
-        "illuminate/database": "~5.0",
-        "sami/sami": "dev-master"
-    },
-    "autoload": {
-        "classmap": [
-            "src/commands"
-        ],
-        "psr-4": {
-            "Michalisantoniou6\\Entrust\\": "src/Entrust/"
-        }
-    },
-    "autoload-dev": {
-        "classmap": [
-            "tests/Middleware/MiddlewareTest.php"
-        ]
-    },
-    "minimum-stability": "dev"
+    "psr-4": {
+      "Michalisantoniou6\\Cerberus\\": "src/Cerberus/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/Middleware/MiddlewareTest.php"
+    ]
+  },
+  "minimum-stability": "dev"
 }

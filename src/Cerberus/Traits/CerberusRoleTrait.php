@@ -1,26 +1,26 @@
-<?php namespace Michalisantoniou6\Entrust\Traits;
+<?php namespace Michalisantoniou6\Cerberus\Traits;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
 
-trait EntrustRoleTrait
+trait CerberusRoleTrait
 {
     //Big block of caching functionality.
     public function cachedPermissions()
     {
         $rolePrimaryKey = $this->primaryKey;
-        $cacheKey = 'entrust_permissions_for_role_' . $this->$rolePrimaryKey;
+        $cacheKey = 'cerberus_permissions_for_role_' . $this->$rolePrimaryKey;
         if (Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('entrust.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl', 60), function () {
+            return Cache::tags(Config::get('cerberus.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl', 60), function () {
                 return $this->perms()->get();
             });
         } else return $this->perms()->get();
@@ -32,7 +32,7 @@ trait EntrustRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
         }
         return true;
     }
@@ -43,7 +43,7 @@ trait EntrustRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
         }
         return true;
     }
@@ -54,7 +54,7 @@ trait EntrustRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
         }
         return true;
     }
@@ -66,7 +66,7 @@ trait EntrustRoleTrait
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('auth.providers.users.model'), Config::get('entrust.role_user_site_table'), Config::get('entrust.role_foreign_key'), Config::get('entrust.user_foreign_key'));
+        return $this->belongsToMany(Config::get('auth.providers.users.model'), Config::get('cerberus.role_user_site_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.user_foreign_key'));
     }
 
     /**
@@ -77,7 +77,7 @@ trait EntrustRoleTrait
      */
     public function perms()
     {
-        return $this->belongsToMany(Config::get('entrust.permission'), Config::get('entrust.permission_role_table'), Config::get('entrust.role_foreign_key'), Config::get('entrust.permission_foreign_key'));
+        return $this->belongsToMany(Config::get('cerberus.permission'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.permission_foreign_key'));
     }
 
     /**
@@ -92,7 +92,7 @@ trait EntrustRoleTrait
         parent::boot();
 
         static::deleting(function ($role) {
-            if (!method_exists(Config::get('entrust.role'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('cerberus.role'), 'bootSoftDeletes')) {
                 $role->users()->sync([]);
                 $role->perms()->sync([]);
             }
@@ -153,7 +153,7 @@ trait EntrustRoleTrait
         }
 
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
         }
     }
 

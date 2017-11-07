@@ -1,9 +1,9 @@
 <?php
 
-use Michalisantoniou6\Entrust\Middleware\EntrustAbility;
+use Michalisantoniou6\Cerberus\Middleware\CerberusAbility;
 use Mockery as m;
 
-class EntrustAbilityTest extends MiddlewareTest
+class CerberusAbilityTest extends MiddlewareTest
 {
     public function testHandle_IsGuestWithNoAbility_ShouldAbort403()
     {
@@ -15,7 +15,7 @@ class EntrustAbilityTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard[guest]');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustAbility($guard);
+        $middleware = new CerberusAbility($guard);
 
         /*
         |------------------------------------------------------------
@@ -45,7 +45,7 @@ class EntrustAbilityTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustAbility($guard);
+        $middleware = new CerberusAbility($guard);
 
         /*
         |------------------------------------------------------------
@@ -75,7 +75,7 @@ class EntrustAbilityTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustAbility($guard);
+        $middleware = new CerberusAbility($guard);
 
         /*
         |------------------------------------------------------------
@@ -105,7 +105,7 @@ class EntrustAbilityTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustAbility($guard);
+        $middleware = new CerberusAbility($guard);
 
         /*
         |------------------------------------------------------------

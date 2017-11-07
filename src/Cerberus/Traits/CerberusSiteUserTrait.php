@@ -1,20 +1,20 @@
 <?php
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
-namespace Michalisantoniou6\Entrust\Traits;
+namespace Michalisantoniou6\Cerberus\Traits;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
-trait EntrustSiteUserTrait
+trait CerberusSiteUserTrait
 {
     /**
      * Many-to-Many relations with Role, including the site_id pivot.
@@ -23,7 +23,7 @@ trait EntrustSiteUserTrait
      */
     public function rolesForSite()
     {
-        return $this->roles()->withPivot(Config::get('entrust.site_foreign_key'));
+        return $this->roles()->withPivot(Config::get('cerberus.site_foreign_key'));
     }
 
     /**
@@ -143,7 +143,7 @@ trait EntrustSiteUserTrait
             return $requireAll;
         } else {
             foreach ($this->cachedRoles() as $role) {
-                if ($role->name == $name && ($role->pivot->{Config::get('entrust.site_foreign_key')} == $site)) {
+                if ($role->name == $name && ($role->pivot->{Config::get('cerberus.site_foreign_key')} == $site)) {
                     return true;
                 }
             }
@@ -190,7 +190,7 @@ trait EntrustSiteUserTrait
         }
 
         $this->roles()->attach($role, [
-            Config::get('entrust.site_foreign_key') => $site,
+            Config::get('cerberus.site_foreign_key') => $site,
         ]);
     }
 
@@ -205,7 +205,7 @@ trait EntrustSiteUserTrait
         $this->validateSite($site);
 
         if ( ! $roles) {
-            $roles = $this->roles()->where(Config::get('entrust.site_foreign_key'), '=', $site)->get();
+            $roles = $this->roles()->where(Config::get('cerberus.site_foreign_key'), '=', $site)->get();
         }
 
         foreach ($roles as $role) {
@@ -233,9 +233,9 @@ trait EntrustSiteUserTrait
             $role = $role['id'];
         }
 
-        return DB::table(Config::get('entrust.role_user_site_table'))->where([
-            [Config::get('entrust.role_foreign_key'), '=', $role],
-            [Config::get('entrust.site_foreign_key'), '=', $site],
+        return DB::table(Config::get('cerberus.role_user_site_table'))->where([
+            [Config::get('cerberus.role_foreign_key'), '=', $role],
+            [Config::get('cerberus.site_foreign_key'), '=', $site],
         ])->delete();
     }
 }

@@ -1,21 +1,21 @@
 <?php
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust Role Model
+    | Cerberus Role Model
     |--------------------------------------------------------------------------
     |
-    | This is the Role model used by Entrust to create correct relations.  Update
+    | This is the Role model used by Cerberus to create correct relations.  Update
     | the role if it is in a different namespace.
     |
     */
@@ -23,20 +23,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust Roles Table
+    | Cerberus Roles Table
     |--------------------------------------------------------------------------
     |
-    | This is the roles table used by Entrust to save roles to the database.
+    | This is the roles table used by Cerberus to save roles to the database.
     |
     */
     'roles_table'            => 'roles',
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust role foreign key
+    | Cerberus role foreign key
     |--------------------------------------------------------------------------
     |
-    | This is the role foreign key used by Entrust to make a proper
+    | This is the role foreign key used by Cerberus to make a proper
     | relation between permissions and roles & roles and users
     |
     */
@@ -47,7 +47,7 @@ return [
     | Site role foreign key
     |--------------------------------------------------------------------------
     |
-    | This is the site foreign key used by Entrust to make a proper
+    | This is the site foreign key used by Cerberus to make a proper
     | relation between permissions and roles, roles and users and users and sites
     |
     */
@@ -58,7 +58,7 @@ return [
     | Application User Model
     |--------------------------------------------------------------------------
     |
-    | This is the User model used by Entrust to create correct relations.
+    | This is the User model used by Cerberus to create correct relations.
     | Update the User if it is in a different namespace.
     |
     */
@@ -77,10 +77,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust role_user Table
+    | Cerberus role_user Table
     |--------------------------------------------------------------------------
     |
-    | This is the role_user table used by Entrust to save assigned roles to the
+    | This is the role_user table used by Cerberus to save assigned roles to the
     | database.
     |
     */
@@ -88,10 +88,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust user foreign key
+    | Cerberus user foreign key
     |--------------------------------------------------------------------------
     |
-    | This is the user foreign key used by Entrust to make a proper
+    | This is the user foreign key used by Cerberus to make a proper
     | relation between roles and users
     |
     */
@@ -99,10 +99,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust Permission Model
+    | Cerberus Permission Model
     |--------------------------------------------------------------------------
     |
-    | This is the Permission model used by Entrust to create correct relations.
+    | This is the Permission model used by Cerberus to create correct relations.
     | Update the permission if it is in a different namespace.
     |
     */
@@ -110,10 +110,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust Permissions Table
+    | Cerberus Permissions Table
     |--------------------------------------------------------------------------
     |
-    | This is the permissions table used by Entrust to save permissions to the
+    | This is the permissions table used by Cerberus to save permissions to the
     | database.
     |
     */
@@ -121,10 +121,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust permission_role Table
+    | Cerberus permission_role Table
     |--------------------------------------------------------------------------
     |
-    | This is the permission_role table used by Entrust to save relationship
+    | This is the permission_role table used by Cerberus to save relationship
     | between permissions and roles to the database.
     |
     */
@@ -132,10 +132,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust permission foreign key
+    | Cerberus permission foreign key
     |--------------------------------------------------------------------------
     |
-    | This is the permission foreign key used by Entrust to make a proper
+    | This is the permission foreign key used by Cerberus to make a proper
     | relation between permissions and roles
     |
     */
@@ -146,7 +146,7 @@ return [
     | Sites Model
     |--------------------------------------------------------------------------
     |
-    | This is the Sites model used by Entrust to create correct relations between roles, users and sites.
+    | This is the Sites model used by Cerberus to create correct relations between roles, users and sites.
     | Update the permission if it is in a different namespace.
     |
     */
@@ -154,10 +154,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Entrust Sites Table
+    | Cerberus Sites Table
     |--------------------------------------------------------------------------
     |
-    | This is the permissions table used by Entrust to save permissions to the
+    | This is the permissions table used by Cerberus to save permissions to the
     | database.
     |
     */

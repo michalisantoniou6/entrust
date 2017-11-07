@@ -1,14 +1,14 @@
-<?php namespace Michalisantoniou6\Entrust;
+<?php namespace Michalisantoniou6\Cerberus;
 
 /**
- * This class is the main entry point of entrust. Usually the interaction
- * with this class will be done through the Entrust Facade
+ * This class is the main entry point of cerberus. Usually the interaction
+ * with this class will be done through the Cerberus Facade
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
-class Entrust
+class Cerberus
 {
     /**
      * Laravel application

@@ -1,9 +1,9 @@
 <?php
 
-use Michalisantoniou6\Entrust\Middleware\EntrustRole;
+use Michalisantoniou6\Cerberus\Middleware\CerberusRole;
 use Mockery as m;
 
-class EntrustRoleTest extends MiddlewareTest
+class CerberusRoleTest extends MiddlewareTest
 {
     public function testHandle_IsGuestWithMismatchingRole_ShouldAbort403()
     {
@@ -15,7 +15,7 @@ class EntrustRoleTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard[guest]');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustRole($guard);
+        $middleware = new CerberusRole($guard);
 
         /*
         |------------------------------------------------------------
@@ -45,7 +45,7 @@ class EntrustRoleTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustRole($guard);
+        $middleware = new CerberusRole($guard);
 
         /*
         |------------------------------------------------------------
@@ -75,7 +75,7 @@ class EntrustRoleTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustRole($guard);
+        $middleware = new CerberusRole($guard);
 
         /*
         |------------------------------------------------------------
@@ -105,7 +105,7 @@ class EntrustRoleTest extends MiddlewareTest
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
         $request = $this->mockRequest();
 
-        $middleware = new EntrustRole($guard);
+        $middleware = new CerberusRole($guard);
 
         /*
         |------------------------------------------------------------

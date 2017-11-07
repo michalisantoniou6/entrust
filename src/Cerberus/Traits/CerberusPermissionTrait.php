@@ -1,16 +1,16 @@
-<?php namespace Michalisantoniou6\Entrust\Traits;
+<?php namespace Michalisantoniou6\Cerberus\Traits;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Support\Facades\Config;
 
-trait EntrustPermissionTrait
+trait CerberusPermissionTrait
 {
     /**
      * Many-to-Many relations with role model.
@@ -19,7 +19,7 @@ trait EntrustPermissionTrait
      */
     public function roles()
     {
-        return $this->belongsToMany(Config::get('entrust.role'), Config::get('entrust.permission_role_table'), Config::get('entrust.permission_foreign_key'), Config::get('entrust.role_foreign_key'));
+        return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.permission_foreign_key'), Config::get('cerberus.role_foreign_key'));
     }
 
     /**
@@ -34,7 +34,7 @@ trait EntrustPermissionTrait
         parent::boot();
 
         static::deleting(function($permission) {
-            if (!method_exists(Config::get('entrust.permission'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('cerberus.permission'), 'bootSoftDeletes')) {
                 $permission->roles()->sync([]);
             }
 

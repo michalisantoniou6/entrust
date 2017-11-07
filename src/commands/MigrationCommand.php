@@ -1,11 +1,11 @@
-<?php namespace Michalisantoniou6\Entrust;
+<?php namespace Michalisantoniou6\Cerberus;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Console\Command;
@@ -18,14 +18,14 @@ class MigrationCommand extends Command
      *
      * @var string
      */
-    protected $name = 'entrust:migration';
+    protected $name = 'cerberus:migration';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Creates a migration following the Entrust specifications.';
+    protected $description = 'Creates a migration following the Cerberus specifications.';
 
     /**
      * Execute the console command.
@@ -34,13 +34,13 @@ class MigrationCommand extends Command
      */
     public function fire()
     {
-        $this->laravel->view->addNamespace('entrust', substr(__DIR__, 0, -8) . 'views');
+        $this->laravel->view->addNamespace('cerberus', substr(__DIR__, 0, -8) . 'views');
 
-        $rolesTable          = Config::get('entrust.roles_table');
-        $roleUserTable       = Config::get('entrust.role_user_site_table');
-        $permissionsTable    = Config::get('entrust.permissions_table');
-        $permissionRoleTable = Config::get('entrust.permission_role_table');
-        $sitesTable          = Config::get('entrust.sites_table');
+        $rolesTable          = Config::get('cerberus.roles_table');
+        $roleUserTable       = Config::get('cerberus.role_user_site_table');
+        $permissionsTable    = Config::get('cerberus.permissions_table');
+        $permissionRoleTable = Config::get('cerberus.permission_role_table');
+        $sitesTable          = Config::get('cerberus.sites_table');
 
         $this->line('');
         $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable");
@@ -86,10 +86,10 @@ class MigrationCommand extends Command
         $permissionRoleTable,
         $sitesTable
     ) {
-        $migrationFile = base_path("/database/migrations") . "/" . date('Y_m_d_His') . "_entrust_setup_tables.php";
+        $migrationFile = base_path("/database/migrations") . "/" . date('Y_m_d_His') . "_cerberus_setup_tables.php";
 
         //@todo: decide whether to keep this, or get user table from config
-        $userModelName = Config::get('entrust.user');
+        $userModelName = Config::get('cerberus.user');
         $userModel     = new $userModelName();
         $usersTable    = $userModel->getTable();
         $userKeyName   = $userModel->getKeyName();
@@ -98,7 +98,7 @@ class MigrationCommand extends Command
         $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable',
             'userKeyName', 'sitesTable');
 
-        $output = $this->laravel->view->make('entrust::generators.migration')->with($data)->render();
+        $output = $this->laravel->view->make('cerberus::generators.migration')->with($data)->render();
 
         if ( ! file_exists($migrationFile) && $fs = fopen($migrationFile, 'x')) {
             fwrite($fs, $output);

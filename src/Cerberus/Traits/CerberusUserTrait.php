@@ -1,11 +1,11 @@
-<?php namespace Michalisantoniou6\Entrust\Traits;
+<?php namespace Michalisantoniou6\Cerberus\Traits;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Cache\TaggableStore;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 
-trait EntrustUserTrait
+trait CerberusUserTrait
 {
     //Big block of caching functionality.
     /**
@@ -39,7 +39,7 @@ trait EntrustUserTrait
     public function save(array $options = [])
     {   //both inserts and updates
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.role_user_site_table'))->flush();
+            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
         }
 
         return parent::save($options);
@@ -49,7 +49,7 @@ trait EntrustUserTrait
     {   //soft or hard
         parent::delete($options);
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.role_user_site_table'))->flush();
+            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
         }
     }
 
@@ -57,7 +57,7 @@ trait EntrustUserTrait
     {   //soft delete undo's
         parent::restore();
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('entrust.role_user_site_table'))->flush();
+            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
         }
     }
 
@@ -165,9 +165,9 @@ trait EntrustUserTrait
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
-        $cacheKey       = 'entrust_roles_for_user_' . $this->$userPrimaryKey;
+        $cacheKey       = 'cerberus_roles_for_user_' . $this->$userPrimaryKey;
         if (Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('entrust.role_user_site_table'))->remember($cacheKey,
+            return Cache::tags(Config::get('cerberus.role_user_site_table'))->remember($cacheKey,
                 Config::get('cache.ttl'), function () {
                     return $this->roles()->get();
                 });
@@ -183,8 +183,8 @@ trait EntrustUserTrait
      */
     public function roles()
     {
-        return $this->belongsToMany(Config::get('entrust.role'), Config::get('entrust.role_user_site_table'),
-            Config::get('entrust.user_foreign_key'), Config::get('entrust.role_foreign_key'));
+        return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.role_user_site_table'),
+            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'));
     }
 
     /**

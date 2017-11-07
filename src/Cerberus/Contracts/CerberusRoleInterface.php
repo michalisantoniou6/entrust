@@ -1,14 +1,14 @@
-<?php namespace Michalisantoniou6\Entrust\Contracts;
+<?php namespace Michalisantoniou6\Cerberus\Contracts;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
-interface EntrustRoleInterface
+interface CerberusRoleInterface
 {
     /**
      * Many-to-Many relations with the user model.

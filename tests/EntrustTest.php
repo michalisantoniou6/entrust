@@ -1,10 +1,10 @@
 <?php
 
-use Michalisantoniou6\Entrust\Entrust;
+use Michalisantoniou6\Cerberus\Cerberus;
 use Illuminate\Support\Facades\Facade;
 use Mockery as m;
 
-class EntrustTest extends PHPUnit_Framework_TestCase
+class CerberusTest extends PHPUnit_Framework_TestCase
 {
     protected $nullFilterTest;
     protected $abortFilterTest;
@@ -67,7 +67,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $app = new stdClass();
-        $entrust = m::mock('Michalisantoniou6\Entrust\Entrust[user]', [$app]);
+        $cerberus = m::mock('Michalisantoniou6\Cerberus\Cerberus[user]', [$app]);
         $user = m::mock('_mockedUser');
 
         /*
@@ -75,11 +75,11 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-        $entrust->shouldReceive('user')
+        $cerberus->shouldReceive('user')
             ->andReturn($user)
             ->twice()->ordered();
 
-        $entrust->shouldReceive('user')
+        $cerberus->shouldReceive('user')
             ->andReturn(false)
             ->once()->ordered();
 
@@ -98,9 +98,9 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($entrust->hasRole('UserRole'));
-        $this->assertFalse($entrust->hasRole('NonUserRole'));
-        $this->assertFalse($entrust->hasRole('AnyRole'));
+        $this->assertTrue($cerberus->hasRole('UserRole'));
+        $this->assertFalse($cerberus->hasRole('NonUserRole'));
+        $this->assertFalse($cerberus->hasRole('AnyRole'));
     }
 
     public function testCan()
@@ -111,7 +111,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $app = new stdClass();
-        $entrust = m::mock('Michalisantoniou6\Entrust\Entrust[user]', [$app]);
+        $cerberus = m::mock('Michalisantoniou6\Cerberus\Cerberus[user]', [$app]);
         $user = m::mock('_mockedUser');
 
         /*
@@ -119,11 +119,11 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-        $entrust->shouldReceive('user')
+        $cerberus->shouldReceive('user')
             ->andReturn($user)
             ->twice()->ordered();
 
-        $entrust->shouldReceive('user')
+        $cerberus->shouldReceive('user')
             ->andReturn(false)
             ->once()->ordered();
 
@@ -142,9 +142,9 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($entrust->can('user_can'));
-        $this->assertFalse($entrust->can('user_cannot'));
-        $this->assertFalse($entrust->can('any_permission'));
+        $this->assertTrue($cerberus->can('user_can'));
+        $this->assertFalse($cerberus->can('user_cannot'));
+        $this->assertFalse($cerberus->can('any_permission'));
     }
 
     public function testUser()
@@ -156,7 +156,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         */
         $app = new stdClass();
         $app->auth = m::mock('Auth');
-        $entrust = new Entrust($app);
+        $cerberus = new Cerberus($app);
         $user = m::mock('_mockedUser');
 
         /*
@@ -173,7 +173,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertSame($user, $entrust->user());
+        $this->assertSame($user, $cerberus->user());
     }
 
     public function testRouteNeedsRole()
@@ -185,7 +185,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         */
         $app = new stdClass();
         $app->router = m::mock('Route');
-        $entrust = new Entrust($app);
+        $cerberus = new Cerberus($app);
 
         $route = 'route';
         $oneRole = 'RoleA';
@@ -212,8 +212,8 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $entrust->routeNeedsRole($route, $oneRole);
-        $entrust->routeNeedsRole($route, $manyRole);
+        $cerberus->routeNeedsRole($route, $oneRole);
+        $cerberus->routeNeedsRole($route, $manyRole);
     }
 
     public function testRouteNeedsPermission()
@@ -225,7 +225,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         */
         $app = new stdClass();
         $app->router = m::mock('Route');
-        $entrust = new Entrust($app);
+        $cerberus = new Cerberus($app);
 
         $route = 'route';
         $onePerm = 'can_a';
@@ -252,8 +252,8 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $entrust->routeNeedsPermission($route, $onePerm);
-        $entrust->routeNeedsPermission($route, $manyPerm);
+        $cerberus->routeNeedsPermission($route, $onePerm);
+        $cerberus->routeNeedsPermission($route, $manyPerm);
     }
 
     public function testRouteNeedsRoleOrPermission()
@@ -265,7 +265,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         */
         $app = new stdClass();
         $app->router = m::mock('Route');
-        $entrust = new Entrust($app);
+        $cerberus = new Cerberus($app);
 
         $route = 'route';
         $oneRole = 'RoleA';
@@ -312,10 +312,10 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $entrust->routeNeedsRoleOrPermission($route, $oneRole, $onePerm);
-        $entrust->routeNeedsRoleOrPermission($route, $oneRole, $manyPerm);
-        $entrust->routeNeedsRoleOrPermission($route, $manyRole, $onePerm);
-        $entrust->routeNeedsRoleOrPermission($route, $manyRole, $manyPerm);
+        $cerberus->routeNeedsRoleOrPermission($route, $oneRole, $onePerm);
+        $cerberus->routeNeedsRoleOrPermission($route, $oneRole, $manyPerm);
+        $cerberus->routeNeedsRoleOrPermission($route, $manyRole, $onePerm);
+        $cerberus->routeNeedsRoleOrPermission($route, $manyRole, $manyPerm);
     }
 
     public function simpleFilterDataProvider()
@@ -351,7 +351,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         // Mock Objects
         $app         = m::mock('Illuminate\Foundation\Application');
         $app->router = m::mock('Route');
-        $entrust     = m::mock("Michalisantoniou6\Entrust\Entrust[$mockedMethod]", [$app]);
+        $cerberus     = m::mock("Michalisantoniou6\Cerberus\Cerberus[$mockedMethod]", [$app]);
 
         // Static values
         $route       = 'route';
@@ -367,8 +367,8 @@ class EntrustTest extends PHPUnit_Framework_TestCase
 
         $this->expectedResponse = $expectedResponse;
 
-        $entrust->shouldReceive($mockedMethod)->with($methodValue, m::any(true, false))->andReturn($returnValue)->once();
-        $entrust->$methodTested($route, $methodValue, $expectedResponse);
+        $cerberus->shouldReceive($mockedMethod)->with($methodValue, m::any(true, false))->andReturn($returnValue)->once();
+        $cerberus->$methodTested($route, $methodValue, $expectedResponse);
     }
 
     public function routeNeedsRoleOrPermissionFilterDataProvider()
@@ -401,7 +401,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
     ) {
         $app         = m::mock('Illuminate\Foundation\Application');
         $app->router = m::mock('Route');
-        $entrust     = m::mock('Michalisantoniou6\Entrust\Entrust[hasRole, can]', [$app]);
+        $cerberus     = m::mock('Michalisantoniou6\Cerberus\Cerberus[hasRole, can]', [$app]);
 
         // Static values
         $route      = 'route';
@@ -412,8 +412,8 @@ class EntrustTest extends PHPUnit_Framework_TestCase
         $app->router->shouldReceive('when')->with($route, $filterName)->once();
         $app->router->shouldReceive('filter')->with($filterName, m::on($this->$filterTest))->once();
 
-        $entrust->shouldReceive('hasRole')->with($roleName, $requireAll)->andReturn($roleIsValid)->once();
-        $entrust->shouldReceive('can')->with($permName, $requireAll)->andReturn($permIsValid)->once();
+        $cerberus->shouldReceive('hasRole')->with($roleName, $requireAll)->andReturn($roleIsValid)->once();
+        $cerberus->shouldReceive('can')->with($permName, $requireAll)->andReturn($permIsValid)->once();
 
         if ($abort) {
             $app->shouldReceive('abort')->with(403)->andThrow('Exception', 'abort')->once();
@@ -421,7 +421,7 @@ class EntrustTest extends PHPUnit_Framework_TestCase
 
         $this->expectedResponse = $expectedResponse;
 
-        $entrust->routeNeedsRoleOrPermission($route, $roleName, $permName, $expectedResponse, $requireAll);
+        $cerberus->routeNeedsRoleOrPermission($route, $roleName, $permName, $expectedResponse, $requireAll);
     }
 
     protected function makeFilterName($route, array $roles, array $permissions = null)

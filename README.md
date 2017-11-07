@@ -1,20 +1,6 @@
-# ENTRUST (Laravel 5.* Package)
+# Laravel Cerberus
 
-#### This package was forked from [Zicaco Entrust](https://github.com/Zizaco/entrust)
-##### It offers the same functionality as the original package, along with multi tenant site capabilities.
-##### EntrustSiteUserTrait and some config options are added. More Documentation coming soon  
-
-[![Build Status](https://travis-ci.org/Zizaco/entrust.svg)](https://travis-ci.org/Zizaco/entrust)
-[![Version](https://img.shields.io/packagist/v/Zizaco/entrust.svg)](https://packagist.org/packages/zizaco/entrust)
-[![License](https://poser.pugx.org/zizaco/entrust/license.svg)](https://packagist.org/packages/zizaco/entrust)
-[![Total Downloads](https://img.shields.io/packagist/dt/zizaco/entrust.svg)](https://packagist.org/packages/zizaco/entrust)
-
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/cc4af966-809b-4fbc-b8b2-bb2850e6711e/small.png)](https://insight.sensiolabs.com/projects/cc4af966-809b-4fbc-b8b2-bb2850e6711e)
-
-Entrust is a succinct and flexible way to add Role-based Permissions to **Laravel 5**.
-
-If you are looking for the Laravel 4 version, take a look [Branch 1.0](https://github.com/Zizaco/entrust/tree/1.0). It
-contains the latest entrust version for Laravel 4.
+Cerberus is a flexible way to add Role-based Permissions to Laravel 5.*
 
 ## Contents
 
@@ -41,25 +27,31 @@ contains the latest entrust version for Laravel 4.
 
 ## Installation
 
-1) In order to install Laravel 5 Entrust, just add the following to your composer.json. Then run `composer update`:
+1) Run this command to install Laravel 5 Cerberus: 
+
+```
+composer require michalisantoniou6/cerberus
+```
+
+Alternatively, you can add just the following to your composer.json. Then run `composer update`:
 
 ```json
-"zizaco/entrust": "5.2.x-dev"
+"michalisantoniou6/cerberus": "v2.0"
 ```
 
 2) Open your `config/app.php` and add the following to the `providers` array:
 
 ```php
-Michalisantoniou6\Entrust\EntrustServiceProvider::class,
+Michalisantoniou6\Cerberus\CerberusServiceProvider::class,
 ```
 
 3) In the same `config/app.php` and add the following to the `aliases ` array: 
 
 ```php
-'Entrust'   => Michalisantoniou6\Entrust\EntrustFacade::class,
+'Cerberus'   => Michalisantoniou6\Cerberus\CerberusFacade::class,
 ```
 
-4) Run the command below to publish the package config file `config/entrust.php`:
+4) Run the command below to publish the package config file `config/cerberus.php`:
 
 ```shell
 php artisan vendor:publish
@@ -80,9 +72,9 @@ php artisan vendor:publish
 6)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also need to add the following:
 
 ```php
-    'role' => \Michalisantoniou6\Entrust\Middleware\EntrustRole::class,
-    'permission' => \Michalisantoniou6\Entrust\Middleware\EntrustPermission::class,
-    'ability' => \Michalisantoniou6\Entrust\Middleware\EntrustAbility::class,
+    'role' => \Michalisantoniou6\Cerberus\Middleware\CerberusRole::class,
+    'permission' => \Michalisantoniou6\Cerberus\Middleware\CerberusPermission::class,
+    'ability' => \Michalisantoniou6\Cerberus\Middleware\CerberusAbility::class,
 ```
 
 to `routeMiddleware` array in `app/Http/Kernel.php`.
@@ -90,19 +82,19 @@ to `routeMiddleware` array in `app/Http/Kernel.php`.
 ## Configuration
 
 Set the property values in the `config/auth.php`.
-These values will be used by entrust to refer to the correct user table and model.
+These values will be used by cerberus to refer to the correct user table and model.
 
-To further customize table names and model namespaces, edit the `config/entrust.php`.
+To further customize table names and model namespaces, edit the `config/cerberus.php`.
 
 ### User relation to roles
 
-Now generate the Entrust migration:
+Now generate the Cerberus migration:
 
 ```bash
-php artisan entrust:migration
+php artisan cerberus:migration
 ```
 
-It will generate the `<timestamp>_entrust_setup_tables.php` migration.
+It will generate the `<timestamp>_cerberus_setup_tables.php` migration.
 You may now run it with the artisan migrate command:
 
 ```bash
@@ -124,9 +116,9 @@ Create a Role model inside `app/models/Role.php` using the following example:
 ```php
 <?php namespace App;
 
-use Michalisantoniou6\Entrust\EntrustRole;
+use Michalisantoniou6\Cerberus\CerberusRole;
 
-class Role extends EntrustRole
+class Role extends CerberusRole
 {
 }
 ```
@@ -145,9 +137,9 @@ Create a Permission model inside `app/models/Permission.php` using the following
 ```php
 <?php namespace App;
 
-use Michalisantoniou6\Entrust\EntrustPermission;
+use Michalisantoniou6\Cerberus\CerberusPermission;
 
-class Permission extends EntrustPermission
+class Permission extends CerberusPermission
 {
 }
 ```
@@ -161,19 +153,19 @@ In general, it may be helpful to think of the last two attributes in the form of
 
 #### User
 
-Next, use the `EntrustUserTrait` trait in your existing `User` model. For example:
+Next, use the `CerberusUserTrait` trait in your existing `User` model. For example:
 
 ```php
 <?php
 
-use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
-use Michalisantoniou6\Entrust\Traits\EntrustSiteUserTrait;
+use Michalisantoniou6\Cerberus\Traits\CerberusUserTrait;
+use Michalisantoniou6\Cerberus\Traits\CerberusSiteUserTrait;
 
 class User extends Eloquent
 {
-    use EntrustUserTrait; // add this trait to your user model
+    use CerberusUserTrait; // add this trait to your user model
 
-    use EntrustSiteUserTrait; //optionally, add this trait (in addition to the one above) for multi-tenant capabilities
+    use CerberusSiteUserTrait; //optionally, add this trait (in addition to the one above) for multi-tenant capabilities
     
     //...
 }
@@ -191,7 +183,7 @@ composer dump-autoload
 
 #### Soft Deleting
 
-The default migration takes advantage of `onDelete('cascade')` clauses within the pivot tables to remove relations when a parent record is deleted. If for some reason you cannot use cascading deletes in your database, the EntrustRole and EntrustPermission classes, and the HasRole trait include event listeners to manually delete records in relevant pivot tables. In the interest of not accidentally deleting data, the event listeners will **not** delete pivot data if the model uses soft deleting. However, due to limitations in Laravel's event listeners, there is no way to distinguish between a call to `delete()` versus a call to `forceDelete()`. For this reason, **before you force delete a model, you must manually delete any of the relationship data** (unless your pivot tables uses cascading deletes). For example:
+The default migration takes advantage of `onDelete('cascade')` clauses within the pivot tables to remove relations when a parent record is deleted. If for some reason you cannot use cascading deletes in your database, the CerberusRole and CerberusPermission classes, and the HasRole trait include event listeners to manually delete records in relevant pivot tables. In the interest of not accidentally deleting data, the event listeners will **not** delete pivot data if the model uses soft deleting. However, due to limitations in Laravel's event listeners, there is no way to distinguish between a call to `delete()` versus a call to `forceDelete()`. For this reason, **before you force delete a model, you must manually delete any of the relationship data** (unless your pivot tables uses cascading deletes). For example:
 
 ```php
 $role = Role::findOrFail(1); // Pull back a given role
@@ -292,11 +284,11 @@ $user->can(['edit-user', 'create-post'], true); // false, user does not have edi
 
 You can have as many `Role`s as you want for each `User` and vice versa.
 
-The `Entrust` class has shortcuts to both `can()` and `hasRole()` for the currently logged in user:
+The `Cerberus` class has shortcuts to both `can()` and `hasRole()` for the currently logged in user:
 
 ```php
-Entrust::hasRole('role-name');
-Entrust::can('permission-name');
+Cerberus::hasRole('role-name');
+Cerberus::can('permission-name');
 
 // is identical to
 
@@ -373,10 +365,10 @@ var_dump($allValidations);
 // }
 
 ```
-The `Entrust` class has a shortcut to `ability()` for the currently logged in user:
+The `Cerberus` class has a shortcut to `ability()` for the currently logged in user:
 
 ```php
-Entrust::ability('admin,owner', 'create-post,edit-user');
+Cerberus::ability('admin,owner', 'create-post,edit-user');
 
 // is identical to
 
@@ -385,23 +377,23 @@ Auth::user()->ability('admin,owner', 'create-post,edit-user');
 
 ### Blade templates
 
-Three directives are available for use within your Blade templates. What you give as the directive arguments will be directly passed to the corresponding `Entrust` function.
+Three directives are available for use within your Blade templates. What you give as the directive arguments will be directly passed to the corresponding `Cerberus` function.
 
 ```php
 @role('admin')
     <p>This is visible to users with the admin role. Gets translated to 
-    \Entrust::role('admin')</p>
+    \Cerberus::role('admin')</p>
 @endrole
 
 @permission('manage-admins')
     <p>This is visible to users with the given permissions. Gets translated to 
-    \Entrust::can('manage-admins'). The @can directive is already taken by core 
+    \Cerberus::can('manage-admins'). The @can directive is already taken by core 
     laravel authorization package, hence the @permission directive instead.</p>
 @endpermission
 
 @ability('admin,owner', 'create-post,edit-user')
     <p>This is visible to users with the given abilities. Gets translated to 
-    \Entrust::ability('admin,owner', 'create-post,edit-user')</p>
+    \Cerberus::ability('admin,owner', 'create-post,edit-user')</p>
 @endability
 ```
 
@@ -436,15 +428,15 @@ To filter a route by permission or role you can call the following in your `app/
 
 ```php
 // only users with roles that have the 'manage_posts' permission will be able to access any route within admin/post
-Entrust::routeNeedsPermission('admin/post*', 'create-post');
+Cerberus::routeNeedsPermission('admin/post*', 'create-post');
 
 // only owners will have access to routes within admin/advanced
-Entrust::routeNeedsRole('admin/advanced*', 'owner');
+Cerberus::routeNeedsRole('admin/advanced*', 'owner');
 
 // optionally the second parameter can be an array of permissions or roles
 // user would need to match all roles or permissions for that route
-Entrust::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'));
-Entrust::routeNeedsRole('admin/advanced*', array('owner','writer'));
+Cerberus::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'));
+Cerberus::routeNeedsRole('admin/advanced*', array('owner','writer'));
 ```
 
 Both of these methods accept a third parameter.
@@ -452,7 +444,7 @@ If the third parameter is null then the return of a prohibited access will be `A
 So you can use it like:
 
 ```php
-Entrust::routeNeedsRole('admin/advanced*', 'owner', Redirect::to('/home'));
+Cerberus::routeNeedsRole('admin/advanced*', 'owner', Redirect::to('/home'));
 ```
 
 Furthermore both of these methods accept a fourth parameter.
@@ -462,14 +454,14 @@ Useful for admin applications where you want to allow access for multiple groups
 
 ```php
 // if a user has 'create-post', 'edit-comment', or both they will have access
-Entrust::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'), null, false);
+Cerberus::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'), null, false);
 
 // if a user is a member of 'owner', 'writer', or both they will have access
-Entrust::routeNeedsRole('admin/advanced*', array('owner','writer'), null, false);
+Cerberus::routeNeedsRole('admin/advanced*', array('owner','writer'), null, false);
 
 // if a user is a member of 'owner', 'writer', or both, or user has 'create-post', 'edit-comment' they will have access
 // if the 4th parameter is true then the user must be a member of Role and must have Permission
-Entrust::routeNeedsRoleOrPermission(
+Cerberus::routeNeedsRoleOrPermission(
     'admin/advanced*',
     array('owner', 'writer'),
     array('create-post', 'edit-comment'),
@@ -480,13 +472,13 @@ Entrust::routeNeedsRoleOrPermission(
 
 ### Route filter
 
-Entrust roles/permissions can be used in filters by simply using the `can` and `hasRole` methods from within the Facade:
+Cerberus roles/permissions can be used in filters by simply using the `can` and `hasRole` methods from within the Facade:
 
 ```php
 Route::filter('manage_posts', function()
 {
     // check the current user
-    if (!Entrust::can('create-post')) {
+    if (!Cerberus::can('create-post')) {
         return Redirect::to('admin');
     }
 });
@@ -501,7 +493,7 @@ Using a filter to check for a role:
 Route::filter('owner_role', function()
 {
     // check the current user
-    if (!Entrust::hasRole('Owner')) {
+    if (!Cerberus::hasRole('Owner')) {
         App::abort(403);
     }
 });
@@ -510,7 +502,7 @@ Route::filter('owner_role', function()
 Route::when('admin/advanced*', 'owner_role');
 ```
 
-As you can see `Entrust::hasRole()` and `Entrust::can()` checks if the user is logged in, and then if he or she has the role or permission.
+As you can see `Cerberus::hasRole()` and `Cerberus::can()` checks if the user is logged in, and then if he or she has the role or permission.
 If the user is not logged the return will also be `false`.
 
 ## Troubleshooting
@@ -526,17 +518,17 @@ SQLSTATE[HY000]: General error: 1005 Can't create table 'laravelbootstrapstarter
 Then it's likely that the `id` column in your user table does not match the `user_id` column in `role_user`.
 Make sure both are `INT(10)`.
 
-When trying to use the EntrustUserTrait methods, you encounter the error which looks like
+When trying to use the CerberusUserTrait methods, you encounter the error which looks like
 
     Class name must be a valid object or a string
 
-then probably you don't have published Entrust assets or something went wrong when you did it.
-First of all check that you have the `entrust.php` file in your `config` directory.
-If you don't, then try `php artisan vendor:publish` and, if it does not appear, manually copy the `/vendor/zizaco/entrust/src/config/config.php` file in your config directory and rename it `entrust.php`.
+then probably you don't have published Cerberus assets or something went wrong when you did it.
+First of all check that you have the `cerberus.php` file in your `config` directory.
+If you don't, then try `php artisan vendor:publish` and, if it does not appear, manually copy the `/vendor/zizaco/cerberus/src/config/config.php` file in your config directory and rename it `cerberus.php`.
 
 ## License
 
-Entrust is free software distributed under the terms of the MIT license.
+Cerberus is free software distributed under the terms of the MIT license.
 
 ## Contribution guidelines
 
@@ -544,3 +536,8 @@ Support follows PSR-1 and PSR-4 PHP coding standards, and semantic versioning.
 
 Please report any issue you find in the issues page.  
 Pull requests are welcome.
+
+## Acknowledgment
+This package was originally forked from [Zicaco/Entrust](https://github.com/Zizaco/cerberus) 
+It offers the same capabilities as the original package, along with multi tenant site capabilities.
+

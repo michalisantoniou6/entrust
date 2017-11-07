@@ -1,21 +1,21 @@
-<?php namespace Michalisantoniou6\Entrust;
+<?php namespace Michalisantoniou6\Cerberus;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
-use Michalisantoniou6\Entrust\Contracts\EntrustRoleInterface;
-use Michalisantoniou6\Entrust\Traits\EntrustRoleTrait;
+use Michalisantoniou6\Cerberus\Contracts\CerberusPermissionInterface;
+use Michalisantoniou6\Cerberus\Traits\CerberusPermissionTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 
-class EntrustRole extends Model implements EntrustRoleInterface
+class CerberusPermission extends Model implements CerberusPermissionInterface
 {
-    use EntrustRoleTrait;
+    use CerberusPermissionTrait;
 
     /**
      * The database table used by the model.
@@ -32,7 +32,7 @@ class EntrustRole extends Model implements EntrustRoleInterface
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = Config::get('entrust.roles_table');
+        $this->table = Config::get('cerberus.permissions_table');
     }
 
 }

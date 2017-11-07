@@ -15,7 +15,7 @@ $versions = GitVersionCollection::create($dir)
 
 $options = array(
     'versions'             => $versions,
-    'title'                => 'Entrust API',
+    'title'                => 'Cerberus API',
     'build_dir'            => __DIR__ . '/build/docs/%version%',
     'cache_dir'            => __DIR__ . '/build/cache/docs/%version%',
     'default_opened_level' => 2,

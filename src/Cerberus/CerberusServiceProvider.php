@@ -1,16 +1,16 @@
-<?php namespace Michalisantoniou6\Entrust;
+<?php namespace Michalisantoniou6\Cerberus;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Support\ServiceProvider;
 
-class EntrustServiceProvider extends ServiceProvider
+class CerberusServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -28,11 +28,11 @@ class EntrustServiceProvider extends ServiceProvider
     {
         // Publish config files
         $this->publishes([
-            __DIR__.'/../config/config.php' => app()->basePath() . '/config/entrust.php',
+            __DIR__.'/../config/config.php' => app()->basePath() . '/config/cerberus.php',
         ]);
 
         // Register commands
-        $this->commands('command.entrust.migration');
+        $this->commands('command.cerberus.migration');
 
         // Register blade directives
         $this->bladeDirectives();
@@ -45,7 +45,7 @@ class EntrustServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerEntrust();
+        $this->registerCerberus();
 
         $this->registerCommands();
 
@@ -61,31 +61,31 @@ class EntrustServiceProvider extends ServiceProvider
     {
         if (!class_exists('\Blade')) return;
 
-        // Call to Entrust::hasRole
+        // Call to Cerberus::hasRole
         \Blade::directive('role', function($expression) {
-            return "<?php if (\\Entrust::hasRole({$expression})) : ?>";
+            return "<?php if (\\Cerberus::hasRole({$expression})) : ?>";
         });
 
         \Blade::directive('endrole', function($expression) {
-            return "<?php endif; // Entrust::hasRole ?>";
+            return "<?php endif; // Cerberus::hasRole ?>";
         });
 
-        // Call to Entrust::can
+        // Call to Cerberus::can
         \Blade::directive('permission', function($expression) {
-            return "<?php if (\\Entrust::can({$expression})) : ?>";
+            return "<?php if (\\Cerberus::can({$expression})) : ?>";
         });
 
         \Blade::directive('endpermission', function($expression) {
-            return "<?php endif; // Entrust::can ?>";
+            return "<?php endif; // Cerberus::can ?>";
         });
 
-        // Call to Entrust::ability
+        // Call to Cerberus::ability
         \Blade::directive('ability', function($expression) {
-            return "<?php if (\\Entrust::ability({$expression})) : ?>";
+            return "<?php if (\\Cerberus::ability({$expression})) : ?>";
         });
 
         \Blade::directive('endability', function($expression) {
-            return "<?php endif; // Entrust::ability ?>";
+            return "<?php endif; // Cerberus::ability ?>";
         });
     }
 
@@ -94,13 +94,13 @@ class EntrustServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function registerEntrust()
+    private function registerCerberus()
     {
-        $this->app->bind('entrust', function ($app) {
-            return new Entrust($app);
+        $this->app->bind('cerberus', function ($app) {
+            return new Cerberus($app);
         });
 
-        $this->app->alias('entrust', 'Michalisantoniou6\Entrust\Entrust');
+        $this->app->alias('cerberus', 'Michalisantoniou6\Cerberus\Cerberus');
     }
 
     /**
@@ -110,20 +110,20 @@ class EntrustServiceProvider extends ServiceProvider
      */
     private function registerCommands()
     {
-        $this->app->singleton('command.entrust.migration', function ($app) {
+        $this->app->singleton('command.cerberus.migration', function ($app) {
             return new MigrationCommand();
         });
     }
 
     /**
-     * Merges user's and entrust's configs.
+     * Merges user's and cerberus's configs.
      *
      * @return void
      */
     private function mergeConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/config.php', 'entrust'
+            __DIR__.'/../config/config.php', 'cerberus'
         );
     }
 
@@ -135,7 +135,7 @@ class EntrustServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'command.entrust.migration'
+            'command.cerberus.migration'
         ];
     }
 }

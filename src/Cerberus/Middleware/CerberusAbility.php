@@ -1,17 +1,17 @@
-<?php namespace Michalisantoniou6\Entrust\Middleware;
+<?php namespace Michalisantoniou6\Cerberus\Middleware;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Entrust
+ * @package Michalisantoniou6\Cerberus
  */
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class EntrustAbility
+class CerberusAbility
 {
     const DELIMITER = '|';
 
