@@ -1,9 +1,9 @@
 <?php
 
-use Zizaco\Entrust\Middleware\EntrustPermission;
+use Michalisantoniou6\Entrust\Middleware\EntrustPermission;
 use Mockery as m;
 
-class EntrustPermissionTest extends MiddlewareTest
+class EntrustPermissionTest extends PHPUnit_Framework_TestCase
 {
     public function testHandle_IsGuestWithNoPermission_ShouldAbort403()
     {

@@ -1,12 +1,12 @@
 <?php
 
-use Zizaco\Entrust\Contracts\EntrustUserInterface;
-use Zizaco\Entrust\Traits\EntrustUserTrait;
+use Michalisantoniou6\Entrust\Contracts\EntrustUserInterface;
+use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
-use Zizaco\Entrust\Permission;
-use Zizaco\Entrust\Role;
+use Michalisantoniou6\Entrust\Permission;
+use Michalisantoniou6\Entrust\Role;
 use Mockery as m;
 
 class EntrustUserTest extends PHPUnit_Framework_TestCase
@@ -41,7 +41,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $belongsToMany = new stdClass();
+        $belongsToMany = m::mock('BelongsToMany');
         $user = m::mock('HasRoleUser')->makePartial();
 
         /*
@@ -49,6 +49,9 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
+        $belongsToMany->shouldReceive('withPivot')
+                      ->andReturn($belongsToMany);
+
         $user->shouldReceive('belongsToMany')
             ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
             ->andReturn($belongsToMany)
@@ -56,12 +59,14 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
 
         Config::shouldReceive('get')->once()->with('entrust.role')
             ->andReturn('role_table_name');
-        Config::shouldReceive('get')->once()->with('entrust.role_user_table')
+        Config::shouldReceive('get')->once()->with('entrust.role_user_site_table')
             ->andReturn('assigned_roles_table_name');
         Config::shouldReceive('get')->once()->with('entrust.user_foreign_key')
             ->andReturn('user_id');
         Config::shouldReceive('get')->once()->with('entrust.role_foreign_key')
             ->andReturn('role_id');
+        Config::shouldReceive('get')->once()->with('entrust.site_foreign_key')
+              ->andReturn('site_id');
 
         /*
         |------------------------------------------------------------
@@ -89,7 +94,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(9)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(9)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(9)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(9)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(9)->andReturn(new ArrayStore);
@@ -136,7 +141,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(11)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(7)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(11)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(11)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(11)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(11)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(11)->andReturn(new ArrayStore);
@@ -182,7 +187,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $role->shouldReceive('cachedPermissions')->times(6)->andReturn($role->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(6)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(6)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(6)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(6)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(6)->andReturn(new ArrayStore);
@@ -241,7 +246,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(16)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(12)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(32)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
@@ -365,7 +370,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(16)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(12)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(32)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
@@ -527,7 +532,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(16)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(12)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(32)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
@@ -703,7 +708,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(4)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(2)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(8)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(8)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(8)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(8)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(8)->andReturn(new ArrayStore);
@@ -779,7 +784,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(16)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(12)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_table')->times(32)->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
@@ -1083,7 +1088,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         Config::shouldReceive('get')->with('entrust.role')->once()->andReturn('App\Role');
-        Config::shouldReceive('get')->with('entrust.role_user_table')->once()->andReturn('role_user');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->once()->andReturn('role_user');
         Config::shouldReceive('get')->with('entrust.user_foreign_key')->once()->andReturn('user_id');
         Config::shouldReceive('get')->with('entrust.role_foreign_key')->once()->andReturn('role_id');
 
@@ -1106,7 +1111,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
 
     protected function mockPermission($permName)
     {
-        $permMock = m::mock('Zizaco\Entrust\Permission');
+        $permMock = m::mock('Michalisantoniou6\Entrust\Permission');
         $permMock->name = $permName;
         $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
         $permMock->id = 1;
@@ -1116,7 +1121,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
 
     protected function mockRole($roleName)
     {
-        $roleMock = m::mock('Zizaco\Entrust\Role');
+        $roleMock = m::mock('Michalisantoniou6\Entrust\Role');
         $roleMock->name = $roleName;
         $roleMock->perms = [];
         $roleMock->permissions = [];
@@ -1141,6 +1146,14 @@ class HasRoleUser implements EntrustUserInterface
 
     public function belongsToMany($role, $assignedRolesTable)
     {
+        return new BelongsToMany();
+    }
+
+
+}
+
+class BelongsToMany {
+    public function withPivot() {
 
     }
 }

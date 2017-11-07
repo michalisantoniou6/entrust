@@ -1,11 +1,11 @@
-<?php namespace Zizaco\Entrust\Traits;
+<?php namespace Michalisantoniou6\Entrust\Traits;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 use Illuminate\Cache\TaggableStore;
@@ -66,7 +66,7 @@ trait EntrustRoleTrait
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('auth.providers.users.model'), Config::get('entrust.role_user_table'), Config::get('entrust.role_foreign_key'), Config::get('entrust.user_foreign_key'));
+        return $this->belongsToMany(Config::get('auth.providers.users.model'), Config::get('entrust.role_user_site_table'), Config::get('entrust.role_foreign_key'), Config::get('entrust.user_foreign_key'));
     }
 
     /**

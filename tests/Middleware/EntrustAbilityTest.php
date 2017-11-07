@@ -1,9 +1,9 @@
 <?php
 
-use Zizaco\Entrust\Middleware\EntrustAbility;
+use Michalisantoniou6\Entrust\Middleware\EntrustAbility;
 use Mockery as m;
 
-class EntrustAbilityTest extends MiddlewareTest
+class EntrustAbilityTest extends PHPUnit_Framework_TestCase
 {
     public function testHandle_IsGuestWithNoAbility_ShouldAbort403()
     {
