@@ -162,17 +162,4 @@ return [
     |
     */
     'sites_table'            => 'sites',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Require site
-    |--------------------------------------------------------------------------
-    |
-    | This defined whether a $site will need to be passed to hasRole(), attachRole(), attachRoles(),
-    | detachRole(), detachRoles(), ability()
-    | Set to false if you do not want the above methods to require $site. For example, if you want some
-    | modules in your application to be used by all users who have a certain role, regardless of site.
-    |
-    */
-    'require_site'            => true,
 ];

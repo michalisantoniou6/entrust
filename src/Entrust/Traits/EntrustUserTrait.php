@@ -65,6 +65,71 @@ trait EntrustUserTrait
     /**
      * Checks role(s) and permission(s).
      *
+     * @param string|array $roles       Array of roles or comma separated string
+     * @param string|array $permissions Array of permissions or comma separated string.
+     * @param array        $options     validate_all (true|false) or return_type (boolean|array|both)
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return array|bool
+     */
+    public function ability($roles, $permissions, $options = [])
+    {
+        // Convert string to array if that's what is passed in.
+        if (!is_array($roles)) {
+            $roles = explode(',', $roles);
+        }
+        if (!is_array($permissions)) {
+            $permissions = explode(',', $permissions);
+        }
+        // Set up default values and validate options.
+        if (!isset($options['validate_all'])) {
+            $options['validate_all'] = false;
+        } else {
+            if ($options['validate_all'] !== true && $options['validate_all'] !== false) {
+                throw new InvalidArgumentException();
+            }
+        }
+        if (!isset($options['return_type'])) {
+            $options['return_type'] = 'boolean';
+        } else {
+            if ($options['return_type'] != 'boolean' &&
+                $options['return_type'] != 'array' &&
+                $options['return_type'] != 'both') {
+                throw new InvalidArgumentException();
+            }
+        }
+        // Loop through roles and permissions and check each.
+        $checkedRoles = [];
+        $checkedPermissions = [];
+        foreach ($roles as $role) {
+            $checkedRoles[$role] = $this->hasRole($role);
+        }
+        foreach ($permissions as $permission) {
+            $checkedPermissions[$permission] = $this->can($permission);
+        }
+        // If validate all and there is a false in either
+        // Check that if validate all, then there should not be any false.
+        // Check that if not validate all, there must be at least one true.
+        if(($options['validate_all'] && !(in_array(false,$checkedRoles) || in_array(false,$checkedPermissions))) ||
+           (!$options['validate_all'] && (in_array(true,$checkedRoles) || in_array(true,$checkedPermissions)))) {
+            $validateAll = true;
+        } else {
+            $validateAll = false;
+        }
+        // Return based on option
+        if ($options['return_type'] == 'boolean') {
+            return $validateAll;
+        } elseif ($options['return_type'] == 'array') {
+            return ['roles' => $checkedRoles, 'permissions' => $checkedPermissions];
+        } else {
+            return [$validateAll, ['roles' => $checkedRoles, 'permissions' => $checkedPermissions]];
+        }
+    }
+
+    /**
+     * Checks role(s) and permission(s).
+     *
      * @param string|array $roles Array of roles or comma separated string
      * @param string|array $permissions Array of permissions or comma separated string.
      * @param array $options validate_all (true|false) or return_type (boolean|array|both)
@@ -73,7 +138,7 @@ trait EntrustUserTrait
      *
      * @return array|bool
      */
-    public function ability($roles, $permissions, $options = [], $site)
+    public function abilityForSite($roles, $permissions, $options = [], $site)
     {
         $this->validateSite($site);
 
@@ -107,7 +172,7 @@ trait EntrustUserTrait
         $checkedRoles       = [];
         $checkedPermissions = [];
         foreach ($roles as $role) {
-            $checkedRoles[$role] = $this->hasRole($role, false, $site);
+            $checkedRoles[$role] = $this->hasRoleForSite($role, false, $site);
         }
         foreach ($permissions as $permission) {
             $checkedPermissions[$permission] = $this->can($permission);
@@ -139,17 +204,14 @@ trait EntrustUserTrait
      *
      * @param string|array $name Role name or array of role names.
      * @param bool $requireAll All roles in the array are required.
-     * @param $site
      *
      * @return bool
      */
-    public function hasRole($name, $requireAll = false, $site)
+    public function hasRole($name, $requireAll = false)
     {
-        $this->validateSite($site);
-
         if (is_array($name)) {
             foreach ($name as $roleName) {
-                $hasRole = $this->hasRole($roleName, false, $site);
+                $hasRole = $this->hasRole($roleName, false);
 
                 if ($hasRole && ! $requireAll) {
                     return true;
@@ -165,6 +227,43 @@ trait EntrustUserTrait
         } else {
             foreach ($this->cachedRoles() as $role) {
                 if ($role->name == $name) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the user has a role by its name for a site.
+     *
+     * @param string|array $name Role name or array of role names.
+     * @param bool $requireAll All roles in the array are required.
+     * @param $site
+     *
+     * @return bool
+     */
+    public function hasRoleForSite($name, $site, $requireAll = false)
+    {
+        if (is_array($name)) {
+            foreach ($name as $roleName) {
+                $hasRole = $this->hasRoleForSite($roleName, false, $site);
+
+                if ($hasRole && ! $requireAll) {
+                    return true;
+                } elseif ( ! $hasRole && $requireAll) {
+                    return false;
+                }
+            }
+
+            // If we've made it this far and $requireAll is FALSE, then NONE of the roles were found
+            // If we've made it this far and $requireAll is TRUE, then ALL of the roles were found.
+            // Return the value of $requireAll;
+            return $requireAll;
+        } else {
+            foreach ($this->cachedRoles() as $role) {
+                if ($role->name == $name && ($role->pivot->{Config::get('entrust.site_foreign_key')} == $site)) {
                     return true;
                 }
             }
@@ -242,9 +341,21 @@ trait EntrustUserTrait
      * Attach multiple roles to a user
      *
      * @param mixed $roles
+     */
+    public function attachRoles($roles)
+    {
+        foreach ($roles as $role) {
+            $this->attachRole($role);
+        }
+    }
+
+    /**
+     * Attach multiple roles to a user
+     *
+     * @param mixed $roles
      * @param $site
      */
-    public function attachRoles($roles, $site)
+    public function attachRolesToSite($roles, $site)
     {
         $this->validateSite($site);
 
@@ -257,9 +368,25 @@ trait EntrustUserTrait
      * Alias to eloquent many-to-many relation's attach() method.
      *
      * @param mixed $role
+     */
+    public function attachRole($role)
+    {
+        if(is_object($role)) {
+            $role = $role->getKey();
+        }
+        if(is_array($role)) {
+            $role = $role['id'];
+        }
+        $this->roles()->attach($role);
+    }
+
+    /**
+     * Alias to eloquent many-to-many relation's attach() method.
+     *
+     * @param mixed $role
      * @param mixed $site
      */
-    public function attachRole($role, $site)
+    public function attachRoleToSite($role, $site)
     {
         $this->validateSite($site);
 
@@ -271,6 +398,10 @@ trait EntrustUserTrait
             $role = $role['id'];
         }
 
+        if (!is_int($role)) {
+            throw new \Exception("Not a valid role id.");
+        }
+
         $this->roles()->attach($role, [
             Config::get('entrust.site_foreign_key') => $site,
         ]);
@@ -280,9 +411,22 @@ trait EntrustUserTrait
      * Detach multiple roles from a user
      *
      * @param mixed $roles
+     */
+    public function detachRoles($roles=null)
+    {
+        if (!$roles) $roles = $this->roles()->get();
+        foreach ($roles as $role) {
+            $this->detachRole($role);
+        }
+    }
+
+    /**
+     * Detach multiple roles from a user
+     *
+     * @param mixed $roles
      * @param $site
      */
-    public function detachRoles($roles = null, $site)
+    public function detachRolesFromSite($roles = null, $site)
     {
         $this->validateSite($site);
 
@@ -299,11 +443,27 @@ trait EntrustUserTrait
      * Alias to eloquent many-to-many relation's detach() method.
      *
      * @param mixed $role
+     */
+    public function detachRole($role)
+    {
+        if (is_object($role)) {
+            $role = $role->getKey();
+        }
+        if (is_array($role)) {
+            $role = $role['id'];
+        }
+        $this->roles()->detach($role);
+    }
+
+    /**
+     * Alias to eloquent many-to-many relation's detach() method.
+     *
+     * @param mixed $role
      * @param $site
      *
      * @return
      */
-    public function detachRole($role, $site)
+    public function detachRoleFromSite($role, $site)
     {
         $this->validateSite($site);
 
@@ -330,19 +490,10 @@ trait EntrustUserTrait
      * @throws \Exception
      */
     public function validateSite($site) {
-        if (!$site && $this->isSiteRequired()) {
+        if (!$site) {
             throw new \Exception("The site is required.");
         }
 
         return true;
-    }
-
-    /**
-     * Retrieves require_site from config
-     *
-     * @return bool
-     */
-    public function isSiteRequired() {
-        return (boolean) Config::get('entrust.require_site');
     }
 }
