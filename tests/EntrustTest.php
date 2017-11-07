@@ -5,7 +5,7 @@ use Michalisantoniou6\Entrust\Entrust;
 use Illuminate\Support\Facades\Facade;
 use Mockery as m;
 
-class EntrustTest extends PHPUnit_Framework_TestCase
+class EntrustTest extends \PHPUnit\Framework\TestCase
 {
     protected $nullFilterTest;
     protected $abortFilterTest;

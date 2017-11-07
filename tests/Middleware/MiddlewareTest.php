@@ -1,8 +1,9 @@
 <?php
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-abstract class MiddlewareTest extends PHPUnit_Framework_TestCase
+abstract class MiddlewareTest extends TestCase
 {
 	public static $abortCode = null;
 

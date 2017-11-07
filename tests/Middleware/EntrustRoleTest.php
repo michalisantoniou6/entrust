@@ -2,8 +2,9 @@
 
 use Michalisantoniou6\Entrust\Middleware\EntrustRole;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class EntrustRoleTest extends PHPUnit_Framework_TestCase
+class EntrustRoleTest extends TestCase
 {
     public function testHandle_IsGuestWithMismatchingRole_ShouldAbort403()
     {

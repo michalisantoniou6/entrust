@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Michalisantoniou6\Entrust\Contracts\EntrustUserInterface;
 use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Cache\ArrayStore;
@@ -8,9 +9,13 @@ use Illuminate\Support\Facades\Cache;
 use Michalisantoniou6\Entrust\Permission;
 use Michalisantoniou6\Entrust\Role;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\TestCase;
 
-class EntrustUserTest extends PHPUnit_Framework_TestCase
+class EntrustUserTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private $facadeMocks = array();
 
     public function setUp()
@@ -27,11 +32,6 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
 
         Cache::setFacadeApplication($app);
         Cache::swap($this->facadeMocks['cache']);
-    }
-
-    public function tearDown()
-    {
-        m::close();
     }
 
     public function testRoles()
@@ -980,6 +980,12 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $roleArray = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
+        $belongsToMany = m::mock('BelongsToMany');
+
+        Config::shouldReceive('get')->with('entrust.site_foreign_key')->times(3)->andReturn('site_id');
+
+        $site = 1;
+
 
         /*
         |------------------------------------------------------------
@@ -990,25 +996,26 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             ->andReturn(1);
 
         $user->shouldReceive('roles')
-            ->andReturn($user);
-        $user->shouldReceive('attach')
-            ->with(1)
-            ->once()->ordered();
-        $user->shouldReceive('attach')
-            ->with(2)
-            ->once()->ordered();
-        $user->shouldReceive('attach')
-            ->with(3)
-            ->once()->ordered();
+            ->andReturn($belongsToMany);
+
+        $belongsToMany->shouldReceive('attach')
+             ->with(1, ['site_id' => $site])
+             ->once()->ordered();
+        $belongsToMany->shouldReceive('attach')
+             ->with(2, ['site_id' => $site])
+             ->once()->ordered();
+        $belongsToMany->shouldReceive('attach')
+             ->with(3, ['site_id' => $site])
+             ->once()->ordered();
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
-        $user->attachRole($roleObject);
-        $user->attachRole($roleArray);
-        $user->attachRole(3);
+        $user->attachRole($roleObject, $site);
+        $user->attachRole($roleArray, $site);
+        $user->attachRole(3, $site);
     }
 
     public function testDetachRole()
@@ -1200,12 +1207,14 @@ class HasRoleUser implements EntrustUserInterface
     {
         return new BelongsToMany();
     }
-
-
 }
 
 class BelongsToMany {
     public function withPivot() {
+
+    }
+
+    public function attach($id, array $attributes = []) {
 
     }
 }
