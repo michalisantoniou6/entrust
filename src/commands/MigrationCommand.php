@@ -34,7 +34,7 @@ class MigrationCommand extends Command
      */
     public function handle()
     {
-        $this->laravel->view->addNamespace('cerberus', substr(__DIR__, 0, -8) . 'views');
+        $this->getLaravel()->view->addNamespace('cerberus', substr(__DIR__, 0, -8) . 'views');
 
         $rolesTable          = Config::get('cerberus.roles_table');
         $roleUserTable       = Config::get('cerberus.role_user_site_table');
@@ -105,7 +105,7 @@ class MigrationCommand extends Command
         $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable',
             'userKeyName', 'sitesTable', 'userFK', 'roleFK', 'siteFK');
 
-        $output = $this->laravel->view->make('cerberus::generators.migration')->with($data)->render();
+        $output = $this->getLaravel()->view->make('cerberus::generators.migration')->with($data)->render();
 
         if ( ! file_exists($migrationFile) && $fs = fopen($migrationFile, 'x')) {
             fwrite($fs, $output);
