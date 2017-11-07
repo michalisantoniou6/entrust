@@ -252,17 +252,19 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
+        $site = 1;
+
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false), $site)
             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false), $site)
             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false), $site)
             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false), $site)
             ->andReturn(false);
 
         /*
@@ -274,14 +276,17 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
-                [$userPermNameA, $userPermNameB]
+                [$userPermNameA, $userPermNameB],
+                ['validate_all' => false],
+                $site
             )
         );
         $this->assertTrue(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true]
+                ['validate_all' => true],
+                $site
             )
         );
 
@@ -289,14 +294,17 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
-                [$userPermNameA, $userPermNameB]
+                [$userPermNameA, $userPermNameB],
+                ['validate_all' => false],
+                $site
             )
         );
         $this->assertFalse(
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
                 [$userPermNameA, $userPermNameB],
-                ['validate_all' => true]
+                ['validate_all' => true],
+                $site
             )
         );
 
@@ -304,14 +312,17 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
-                [$nonUserPermNameA, $userPermNameB]
+                [$nonUserPermNameA, $userPermNameB],
+                ['validate_all' => false],
+                $site
             )
         );
         $this->assertFalse(
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['validate_all' => true]
+                ['validate_all' => false],
+                $site
             )
         );
 
@@ -319,14 +330,17 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
-                [$nonUserPermNameA, $nonUserPermNameB]
+                [$nonUserPermNameA, $nonUserPermNameB],
+                ['validate_all' => false],
+                $site
             )
         );
         $this->assertFalse(
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
                 [$nonUserPermNameA, $nonUserPermNameB],
-                ['validate_all' => true]
+                ['validate_all' => true],
+                $site
             )
         );
     }
