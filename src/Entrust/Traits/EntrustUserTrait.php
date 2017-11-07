@@ -355,12 +355,12 @@ trait EntrustUserTrait
      * @param mixed $roles
      * @param $site
      */
-    public function attachRolesToSite($roles, $site)
+    public function attachRolesForSite($roles, $site)
     {
         $this->validateSite($site);
 
         foreach ($roles as $role) {
-            $this->attachRole($role, $site);
+            $this->attachRoleForSite($role, $site);
         }
     }
 
@@ -386,7 +386,7 @@ trait EntrustUserTrait
      * @param mixed $role
      * @param mixed $site
      */
-    public function attachRoleToSite($role, $site)
+    public function attachRoleForSite($role, $site)
     {
         $this->validateSite($site);
 
@@ -426,7 +426,7 @@ trait EntrustUserTrait
      * @param mixed $roles
      * @param $site
      */
-    public function detachRolesFromSite($roles = null, $site)
+    public function detachRolesForSite($roles = null, $site)
     {
         $this->validateSite($site);
 
@@ -463,7 +463,7 @@ trait EntrustUserTrait
      *
      * @return
      */
-    public function detachRoleFromSite($role, $site)
+    public function detachRoleForSite($role, $site)
     {
         $this->validateSite($site);
 
