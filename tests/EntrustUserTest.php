@@ -41,7 +41,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $belongsToMany = new stdClass();
+        $belongsToMany = m::mock('BelongsToMany');
         $user = m::mock('HasRoleUser')->makePartial();
 
         /*
@@ -49,6 +49,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
+        $belongsToMany->shouldReceive('withPivot')->andReturn($belongsToMany);
+
         $user->shouldReceive('belongsToMany')
             ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
             ->andReturn($belongsToMany)
@@ -62,6 +64,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
             ->andReturn('user_id');
         Config::shouldReceive('get')->once()->with('cerberus.role_foreign_key')
             ->andReturn('role_id');
+        Config::shouldReceive('get')->once()->with('cerberus.site_foreign_key')
+              ->andReturn('role_id');
 
         /*
         |------------------------------------------------------------
@@ -1075,24 +1079,11 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user = m::mock('HasRoleUser')->makePartial();
         $user->roles = [$roleA, $roleB];
 
-        $relationship = m::mock('BelongsToMany');
-
         /*
         |------------------------------------------------------------
         | Expectation
         |------------------------------------------------------------
         */
-        Config::shouldReceive('get')->with('cerberus.role')->once()->andReturn('App\Role');
-        Config::shouldReceive('get')->with('cerberus.role_user_site_table')->once()->andReturn('role_user');
-        Config::shouldReceive('get')->with('cerberus.user_foreign_key')->once()->andReturn('user_id');
-        Config::shouldReceive('get')->with('cerberus.role_foreign_key')->once()->andReturn('role_id');
-
-        $relationship->shouldReceive('get')
-                     ->andReturn($user->roles)->once();
-
-        $user->shouldReceive('belongsToMany')
-                    ->andReturn($relationship)->once();
-
         $user->shouldReceive('detachRole')->twice();
 
         /*

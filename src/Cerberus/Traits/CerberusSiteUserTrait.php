@@ -17,16 +17,6 @@ use InvalidArgumentException;
 trait CerberusSiteUserTrait
 {
     /**
-     * Many-to-Many relations with Role, including the site_id pivot.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function rolesForSite()
-    {
-        return $this->roles()->withPivot(Config::get('cerberus.site_foreign_key'));
-    }
-
-    /**
      * Checks role(s) and permission(s).
      *
      * @param string|array $roles Array of roles or comma separated string
@@ -209,7 +199,7 @@ trait CerberusSiteUserTrait
         }
 
         foreach ($roles as $role) {
-            $this->detachRole($role, $site);
+            $this->detachRoleForSite($role, $site);
         }
     }
 

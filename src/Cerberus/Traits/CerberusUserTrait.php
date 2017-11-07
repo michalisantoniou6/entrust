@@ -64,9 +64,9 @@ trait CerberusUserTrait
     /**
      * Checks role(s) and permission(s).
      *
-     * @param string|array $roles       Array of roles or comma separated string
+     * @param string|array $roles Array of roles or comma separated string
      * @param string|array $permissions Array of permissions or comma separated string.
-     * @param array        $options     validate_all (true|false) or return_type (boolean|array|both)
+     * @param array $options validate_all (true|false) or return_type (boolean|array|both)
      *
      * @throws \InvalidArgumentException
      *
@@ -75,21 +75,21 @@ trait CerberusUserTrait
     public function ability($roles, $permissions, $options = [])
     {
         // Convert string to array if that's what is passed in.
-        if (!is_array($roles)) {
+        if ( ! is_array($roles)) {
             $roles = explode(',', $roles);
         }
-        if (!is_array($permissions)) {
+        if ( ! is_array($permissions)) {
             $permissions = explode(',', $permissions);
         }
         // Set up default values and validate options.
-        if (!isset($options['validate_all'])) {
+        if ( ! isset($options['validate_all'])) {
             $options['validate_all'] = false;
         } else {
             if ($options['validate_all'] !== true && $options['validate_all'] !== false) {
                 throw new InvalidArgumentException();
             }
         }
-        if (!isset($options['return_type'])) {
+        if ( ! isset($options['return_type'])) {
             $options['return_type'] = 'boolean';
         } else {
             if ($options['return_type'] != 'boolean' &&
@@ -99,7 +99,7 @@ trait CerberusUserTrait
             }
         }
         // Loop through roles and permissions and check each.
-        $checkedRoles = [];
+        $checkedRoles       = [];
         $checkedPermissions = [];
         foreach ($roles as $role) {
             $checkedRoles[$role] = $this->hasRole($role);
@@ -110,8 +110,8 @@ trait CerberusUserTrait
         // If validate all and there is a false in either
         // Check that if validate all, then there should not be any false.
         // Check that if not validate all, there must be at least one true.
-        if(($options['validate_all'] && !(in_array(false,$checkedRoles) || in_array(false,$checkedPermissions))) ||
-           (!$options['validate_all'] && (in_array(true,$checkedRoles) || in_array(true,$checkedPermissions)))) {
+        if (($options['validate_all'] && ! (in_array(false, $checkedRoles) || in_array(false, $checkedPermissions))) ||
+            ( ! $options['validate_all'] && (in_array(true, $checkedRoles) || in_array(true, $checkedPermissions)))) {
             $validateAll = true;
         } else {
             $validateAll = false;
@@ -184,7 +184,8 @@ trait CerberusUserTrait
     public function roles()
     {
         return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.role_user_site_table'),
-            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'));
+            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'))
+                    ->withPivot(Config::get('cerberus.site_foreign_key'));
     }
 
     /**
@@ -245,10 +246,10 @@ trait CerberusUserTrait
      */
     public function attachRole($role)
     {
-        if(is_object($role)) {
+        if (is_object($role)) {
             $role = $role->getKey();
         }
-        if(is_array($role)) {
+        if (is_array($role)) {
             $role = $role['id'];
         }
         $this->roles()->attach($role);
@@ -259,9 +260,11 @@ trait CerberusUserTrait
      *
      * @param mixed $roles
      */
-    public function detachRoles($roles=null)
+    public function detachRoles($roles = null)
     {
-        if (!$roles) $roles = $this->roles()->get();
+        if ( ! $roles) {
+            $roles = $this->roles;
+        }
         foreach ($roles as $role) {
             $this->detachRole($role);
         }
