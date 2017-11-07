@@ -247,10 +247,10 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
         */
         $roleA->shouldReceive('cachedPermissions')->times(16)->andReturn($roleA->perms);
         $roleB->shouldReceive('cachedPermissions')->times(12)->andReturn($roleB->perms);
-        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(32)->andReturn('role_user_site');
-        Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
-        Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(16)->andReturn('role_user_site');
+        Config::shouldReceive('get')->with('cache.ttl')->times(16)->andReturn('1440');
+        Cache::shouldReceive('tags->remember')->times(16)->andReturn($user->roles);
+        Cache::shouldReceive('getStore')->times(16)->andReturn(new ArrayStore);
 
         $site = 1;
 
@@ -321,7 +321,7 @@ class EntrustUserTest extends PHPUnit_Framework_TestCase
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
                 [$nonUserPermNameA, $userPermNameB],
-                ['validate_all' => false],
+                ['validate_all' => true],
                 $site
             )
         );
