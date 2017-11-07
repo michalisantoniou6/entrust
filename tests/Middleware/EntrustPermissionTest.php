@@ -2,9 +2,8 @@
 
 use Michalisantoniou6\Entrust\Middleware\EntrustPermission;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 
-class EntrustPermissionTest extends TestCase
+class EntrustPermissionTest extends MiddlewareTest
 {
     public function testHandle_IsGuestWithNoPermission_ShouldAbort403()
     {

@@ -1,11 +1,10 @@
 <?php
 
-use Tests\TestCase;
 use Michalisantoniou6\Entrust\Entrust;
 use Illuminate\Support\Facades\Facade;
 use Mockery as m;
 
-class EntrustTest extends \PHPUnit\Framework\TestCase
+class EntrustTest extends PHPUnit_Framework_TestCase
 {
     protected $nullFilterTest;
     protected $abortFilterTest;
