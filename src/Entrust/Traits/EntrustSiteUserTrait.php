@@ -21,11 +21,9 @@ trait EntrustSiteUserTrait
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function roles()
+    public function rolesForSite()
     {
-        return $this->belongsToMany(Config::get('entrust.role'), Config::get('entrust.role_user_site_table'),
-            Config::get('entrust.user_foreign_key'), Config::get('entrust.role_foreign_key'))
-                    ->withPivot(Config::get('entrust.site_foreign_key'));
+        return $this->roles()->withPivot(Config::get('entrust.site_foreign_key'));
     }
 
     /**
