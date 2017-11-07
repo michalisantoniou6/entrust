@@ -5,7 +5,7 @@
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 return [
@@ -44,6 +44,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Site role foreign key
+    |--------------------------------------------------------------------------
+    |
+    | This is the site foreign key used by Entrust to make a proper
+    | relation between permissions and roles, roles and users and users and sites
+    |
+    */
+    'site_foreign_key' => 'site_id',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application User Model
     |--------------------------------------------------------------------------
     |
@@ -73,7 +84,7 @@ return [
     | database.
     |
     */
-    'role_user_table' => 'role_user',
+    'role_user_site_table' => 'role_user_site',
 
     /*
     |--------------------------------------------------------------------------
@@ -129,4 +140,15 @@ return [
     |
     */
     'permission_foreign_key' => 'permission_id',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sites Model
+    |--------------------------------------------------------------------------
+    |
+    | This is the Sites model used by Entrust to create correct relations between roles, users and sites.
+    | Update the permission if it is in a different namespace.
+    |
+    */
+    'site' => 'App\Site',
 ];
