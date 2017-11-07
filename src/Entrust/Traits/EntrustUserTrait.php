@@ -289,6 +289,9 @@ trait EntrustUserTrait
      * Alias to eloquent many-to-many relation's detach() method.
      *
      * @param mixed $role
+     * @param $site
+     *
+     * @return
      */
     public function detachRole($role, $site)
     {

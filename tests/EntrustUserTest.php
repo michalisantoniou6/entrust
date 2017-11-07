@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
-use Michalisantoniou6\Entrust\Contracts\EntrustUserInterface;
-use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Cache\ArrayStore;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Michalisantoniou6\Entrust\Contracts\EntrustUserInterface;
 use Michalisantoniou6\Entrust\Permission;
 use Michalisantoniou6\Entrust\Role;
+use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ class EntrustUserTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    private $facadeMocks = array();
+    private $facadeMocks = [];
 
     public function setUp()
     {
@@ -25,13 +25,17 @@ class EntrustUserTest extends TestCase
         $app = m::mock('app')->shouldReceive('instance')->getMock();
 
         $this->facadeMocks['config'] = m::mock('config');
-        $this->facadeMocks['cache'] = m::mock('cache');
+        $this->facadeMocks['cache']  = m::mock('cache');
+        $this->facadeMocks['db']     = m::spy('db');
 
         Config::setFacadeApplication($app);
         Config::swap($this->facadeMocks['config']);
 
         Cache::setFacadeApplication($app);
         Cache::swap($this->facadeMocks['cache']);
+
+        DB::setFacadeApplication($app);
+        DB::swap($this->facadeMocks['db']);
     }
 
     public function testRoles()
@@ -42,7 +46,7 @@ class EntrustUserTest extends TestCase
         |------------------------------------------------------------
         */
         $belongsToMany = m::mock('BelongsToMany');
-        $user = m::mock('HasRoleUser')->makePartial();
+        $user          = m::mock('HasRoleUser')->makePartial();
 
         /*
         |------------------------------------------------------------
@@ -53,18 +57,18 @@ class EntrustUserTest extends TestCase
                       ->andReturn($belongsToMany);
 
         $user->shouldReceive('belongsToMany')
-            ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
-            ->andReturn($belongsToMany)
-            ->once();
+             ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
+             ->andReturn($belongsToMany)
+             ->once();
 
         Config::shouldReceive('get')->once()->with('entrust.role')
-            ->andReturn('role_table_name');
+              ->andReturn('role_table_name');
         Config::shouldReceive('get')->once()->with('entrust.role_user_site_table')
-            ->andReturn('assigned_roles_table_name');
+              ->andReturn('assigned_roles_table_name');
         Config::shouldReceive('get')->once()->with('entrust.user_foreign_key')
-            ->andReturn('user_id');
+              ->andReturn('user_id');
         Config::shouldReceive('get')->once()->with('entrust.role_foreign_key')
-            ->andReturn('role_id');
+              ->andReturn('role_id');
         Config::shouldReceive('get')->once()->with('entrust.site_foreign_key')
               ->andReturn('site_id');
 
@@ -86,7 +90,7 @@ class EntrustUserTest extends TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -115,6 +119,17 @@ class EntrustUserTest extends TestCase
         $this->assertFalse($user->hasRole(['RoleC', 'RoleD'], false, $site));
     }
 
+    protected function mockRole($roleName)
+    {
+        $roleMock              = m::mock('Michalisantoniou6\Entrust\Role');
+        $roleMock->name        = $roleName;
+        $roleMock->perms       = [];
+        $roleMock->permissions = [];
+        $roleMock->id          = 1;
+
+        return $roleMock;
+    }
+
     public function testCan()
     {
         /*
@@ -132,7 +147,7 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -163,8 +178,17 @@ class EntrustUserTest extends TestCase
         $this->assertFalse($user->can(['manage_d', 'manage_e']));
     }
 
+    protected function mockPermission($permName)
+    {
+        $permMock               = m::mock('Michalisantoniou6\Entrust\Permission');
+        $permMock->name         = $permName;
+        $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
+        $permMock->id           = 1;
 
-    public function testCanWithPlaceholderSupport ()
+        return $permMock;
+    }
+
+    public function testCanWithPlaceholderSupport()
     {
         /*
         |------------------------------------------------------------
@@ -179,7 +203,7 @@ class EntrustUserTest extends TestCase
 
         $role->perms = [$permA, $permB, $permC];
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$role];
 
         /*
@@ -207,7 +231,6 @@ class EntrustUserTest extends TestCase
         $this->assertFalse($user->can(['site.*']));
     }
 
-
     public function testAbilityShouldReturnBoolean()
     {
         /*
@@ -215,13 +238,13 @@ class EntrustUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -235,9 +258,9 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -255,17 +278,17 @@ class EntrustUserTest extends TestCase
         $site = 1;
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false), $site)
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false), $site)
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false), $site)
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false), $site)
+             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false), $site)
-            ->andReturn(true);
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false), $site)
+             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false), $site)
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false), $site)
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -352,13 +375,13 @@ class EntrustUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -372,9 +395,9 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
 
@@ -391,17 +414,17 @@ class EntrustUserTest extends TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -413,7 +436,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                'permissions' => [$userPermNameA => true, $userPermNameB => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -425,7 +448,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                'permissions' => [$userPermNameA => true, $userPermNameB => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -440,7 +463,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -452,7 +475,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -466,8 +489,8 @@ class EntrustUserTest extends TestCase
         // Case: User lacks a permission.
         $this->assertSame(
             [
-                'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
+                'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -478,8 +501,8 @@ class EntrustUserTest extends TestCase
         );
         $this->assertSame(
             [
-                'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
+                'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -494,7 +517,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
+                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -506,7 +529,7 @@ class EntrustUserTest extends TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
+                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -524,13 +547,13 @@ class EntrustUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -544,9 +567,9 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -562,17 +585,17 @@ class EntrustUserTest extends TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -586,8 +609,8 @@ class EntrustUserTest extends TestCase
                 true,
                 [
                     'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA => true, $userPermNameB => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -601,8 +624,8 @@ class EntrustUserTest extends TestCase
                 true,
                 [
                     'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA => true, $userPermNameB => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -619,8 +642,8 @@ class EntrustUserTest extends TestCase
                 true,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -634,8 +657,8 @@ class EntrustUserTest extends TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -651,9 +674,9 @@ class EntrustUserTest extends TestCase
             [
                 true,
                 [
-                    'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
-                ]
+                    'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -666,9 +689,9 @@ class EntrustUserTest extends TestCase
             [
                 false,
                 [
-                    'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
-                ]
+                    'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -685,8 +708,8 @@ class EntrustUserTest extends TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
-                ]
+                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -700,8 +723,8 @@ class EntrustUserTest extends TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
-                ]
+                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -729,9 +752,9 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -747,17 +770,17 @@ class EntrustUserTest extends TestCase
         Cache::shouldReceive('getStore')->times(8)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf('UserRoleA', 'UserRoleB'), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf('UserRoleA', 'UserRoleB'), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with('NonUserRoleB', m::anyOf(true, false))
-            ->andReturn(false);
+             ->with('NonUserRoleB', m::anyOf(true, false))
+             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf('user_can_a', 'user_can_b', 'user_can_c'), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf('user_can_a', 'user_can_b', 'user_can_c'), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with('user_cannot_b', m::anyOf(true, false))
-            ->andReturn(false);
+             ->with('user_cannot_b', m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -788,13 +811,13 @@ class EntrustUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -808,9 +831,9 @@ class EntrustUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -826,17 +849,17 @@ class EntrustUserTest extends TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
         $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -921,12 +944,12 @@ class EntrustUserTest extends TestCase
         */
         $permA = $this->mockPermission('manage_a');
 
-        $roleA = $this->mockRole('RoleA');
+        $roleA        = $this->mockRole('RoleA');
         $roleA->perms = [$permA];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         function isExceptionThrown(
@@ -953,9 +976,9 @@ class EntrustUserTest extends TestCase
         |------------------------------------------------------------
         */
         $user->shouldReceive('hasRole')
-            ->times(3);
+             ->times(3);
         $user->shouldReceive('can')
-            ->times(3);
+             ->times(3);
 
         $site = 1;
         /*
@@ -977,12 +1000,10 @@ class EntrustUserTest extends TestCase
         |------------------------------------------------------------
         */
         $roleObject = m::mock('Role');
-        $roleArray = ['id' => 2];
+        $roleArray  = ['id' => 2];
 
-        $user = m::mock('HasRoleUser')->makePartial();
+        $user          = m::mock('HasRoleUser')->makePartial();
         $belongsToMany = m::mock('BelongsToMany');
-
-        Config::shouldReceive('get')->with('entrust.site_foreign_key')->times(3)->andReturn('site_id');
 
         $site = 1;
 
@@ -992,21 +1013,23 @@ class EntrustUserTest extends TestCase
         | Expectation
         |------------------------------------------------------------
         */
+        Config::shouldReceive('get')->with('entrust.site_foreign_key')->times(3)->andReturn('site_id');
+
         $roleObject->shouldReceive('getKey')
-            ->andReturn(1);
+                   ->andReturn(1);
 
         $user->shouldReceive('roles')
-            ->andReturn($belongsToMany);
+             ->andReturn($belongsToMany);
 
         $belongsToMany->shouldReceive('attach')
-             ->with(1, ['site_id' => $site])
-             ->once()->ordered();
+                      ->with(1, ['site_id' => $site])
+                      ->once()->ordered();
         $belongsToMany->shouldReceive('attach')
-             ->with(2, ['site_id' => $site])
-             ->once()->ordered();
+                      ->with(2, ['site_id' => $site])
+                      ->once()->ordered();
         $belongsToMany->shouldReceive('attach')
-             ->with(3, ['site_id' => $site])
-             ->once()->ordered();
+                      ->with(3, ['site_id' => $site])
+                      ->once()->ordered();
 
         /*
         |------------------------------------------------------------
@@ -1025,40 +1048,37 @@ class EntrustUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $roleObject = m::mock('Role');
-        $roleArray = ['id' => 2];
+        $belongsToMany = m::mock('BelongsToMany');
+        $roleObject    = m::mock(Michalisantoniou6\Entrust\EntrustRole::class);
+        $roleArray     = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
+
+        $site = 1;
 
         /*
         |------------------------------------------------------------
         | Expectation
         |------------------------------------------------------------
         */
+        Config::shouldReceive('get')->with('entrust.role_foreign_key')->times(3)->andReturn('role_id');
+        Config::shouldReceive('get')->with('entrust.site_foreign_key')->times(3)->andReturn('site_id');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->times(3)->andReturn('role_user_site');
+
         $roleObject->shouldReceive('getKey')
-            ->andReturn(1);
+                   ->times(1)
+                   ->andReturn(1);
 
-        $user->shouldReceive('roles')
-            ->andReturn($user);
-        $user->shouldReceive('detach')
-            ->with(1)
-            ->once()->ordered();
-        $user->shouldReceive('detach')
-            ->with(2)
-            ->once()->ordered();
-        $user->shouldReceive('detach')
-            ->with(3)
-            ->once()->ordered();
-
+        DB::shouldHaveReceived('table')->shouldHaveReceived('where');
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
-        $user->detachRole($roleObject);
-        $user->detachRole($roleArray);
-        $user->detachRole(3);
+        $user->detachRole($roleObject, $site);
+        $user->detachRole($roleArray, $site);
+        $user->detachRole(3, $site);
     }
 
     public function testAttachRoles()
@@ -1069,28 +1089,40 @@ class EntrustUserTest extends TestCase
         |------------------------------------------------------------
         */
         $user = m::mock('HasRoleUser')->makePartial();
+        $belongsToMany = m::mock('BelongsToMany');
 
+
+        $site = 1;
         /*
         |------------------------------------------------------------
         | Expectation
         |------------------------------------------------------------
         */
-        $user->shouldReceive('attachRole')
-            ->with(1)
-            ->once()->ordered();
-        $user->shouldReceive('attachRole')
-            ->with(2)
-            ->once()->ordered();
-        $user->shouldReceive('attachRole')
-            ->with(3)
-            ->once()->ordered();
+        Config::shouldReceive('get')->with('entrust.role')->andReturn('App\Role');
+        Config::shouldReceive('get')->with('entrust.user_foreign_key')->andReturn('user_id');
+        Config::shouldReceive('get')->with('entrust.role_foreign_key')->andReturn('role_id');
+        Config::shouldReceive('get')->with('entrust.site_foreign_key')->andReturn('site_id');
+        Config::shouldReceive('get')->with('entrust.role_user_site_table')->andReturn('role_user_site');
+
+        $user->shouldReceive('roles')
+             ->andReturn($belongsToMany);
+
+        $belongsToMany->shouldReceive('attach')
+                      ->with(1, ['site_id' => $site])
+                      ->once()->ordered();
+        $belongsToMany->shouldReceive('attach')
+                      ->with(2, ['site_id' => $site])
+                      ->once()->ordered();
+        $belongsToMany->shouldReceive('attach')
+                      ->with(3, ['site_id' => $site])
+                      ->once()->ordered();
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
-        $user->attachRoles([1, 2, 3]);
+        $user->attachRoles([1, 2, 3], $site);
     }
 
     public function testDetachRoles()
@@ -1108,14 +1140,14 @@ class EntrustUserTest extends TestCase
         |------------------------------------------------------------
         */
         $user->shouldReceive('detachRole')
-            ->with(1)
-            ->once()->ordered();
+             ->with(1)
+             ->once()->ordered();
         $user->shouldReceive('detachRole')
-            ->with(2)
-            ->once()->ordered();
+             ->with(2)
+             ->once()->ordered();
         $user->shouldReceive('detachRole')
-            ->with(3)
-            ->once()->ordered();
+             ->with(3)
+             ->once()->ordered();
 
         /*
         |------------------------------------------------------------
@@ -1135,7 +1167,7 @@ class EntrustUserTest extends TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user = m::mock('HasRoleUser')->makePartial();
+        $user        = m::mock('HasRoleUser')->makePartial();
         $user->roles = [$roleA, $roleB];
 
         $relationship = m::mock('BelongsToMany');
@@ -1154,7 +1186,7 @@ class EntrustUserTest extends TestCase
                      ->andReturn($user->roles)->once();
 
         $user->shouldReceive('belongsToMany')
-                    ->andReturn($relationship)->once();
+             ->andReturn($relationship)->once();
 
         $user->shouldReceive('detachRole')->twice();
 
@@ -1165,27 +1197,6 @@ class EntrustUserTest extends TestCase
         */
         $user->detachRoles();
 
-    }
-
-    protected function mockPermission($permName)
-    {
-        $permMock = m::mock('Michalisantoniou6\Entrust\Permission');
-        $permMock->name = $permName;
-        $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
-        $permMock->id = 1;
-
-        return $permMock;
-    }
-
-    protected function mockRole($roleName)
-    {
-        $roleMock = m::mock('Michalisantoniou6\Entrust\Role');
-        $roleMock->name = $roleName;
-        $roleMock->perms = [];
-        $roleMock->permissions = [];
-        $roleMock->id = 1;
-
-        return $roleMock;
     }
 }
 
@@ -1198,9 +1209,10 @@ class HasRoleUser implements EntrustUserInterface
     public $primaryKey;
     public $id;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->primaryKey = 'id';
-        $this->id = 4;
+        $this->id         = 4;
     }
 
     public function belongsToMany($role, $assignedRolesTable)
@@ -1209,12 +1221,15 @@ class HasRoleUser implements EntrustUserInterface
     }
 }
 
-class BelongsToMany {
-    public function withPivot() {
+class BelongsToMany
+{
+    public function withPivot()
+    {
 
     }
 
-    public function attach($id, array $attributes = []) {
+    public function attach($id, array $attributes = [])
+    {
 
     }
 }

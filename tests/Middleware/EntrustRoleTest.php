@@ -1,11 +1,16 @@
 <?php
 
+use Michalisantoniou6\Entrust\Contracts\EntrustUserInterface;
 use Michalisantoniou6\Entrust\Middleware\EntrustRole;
+use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
 class EntrustRoleTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     public function testHandle_IsGuestWithMismatchingRole_ShouldAbort403()
     {
         /*
@@ -74,7 +79,9 @@ class EntrustRoleTest extends TestCase
         |------------------------------------------------------------
         */
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
-        $request = $this->mockRequest();
+        $user = m::mock('HasRoleUser');
+        $request = new Request();
+        $request->user = $user;
 
         $middleware = new EntrustRole($guard);
 
@@ -84,7 +91,8 @@ class EntrustRoleTest extends TestCase
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(false);
-        $request->user()->shouldReceive('hasRole')->andReturn(false);
+
+        $request->user->shouldReceive('hasRole')->andReturn(false);
 
         $middleware->handle($request, function () {}, null, null);
 
@@ -93,7 +101,7 @@ class EntrustRoleTest extends TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertAbortCode(403);
+        $this->expectExceptionCode(403);
     }
 
     public function testHandle_IsLoggedInWithMatchingRole_ShouldNotAbort()
@@ -104,7 +112,9 @@ class EntrustRoleTest extends TestCase
         |------------------------------------------------------------
         */
         $guard = m::mock('Illuminate\Contracts\Auth\Guard');
-        $request = $this->mockRequest();
+        $user = m::mock('HasRoleUser');
+        $request = new Request();
+        $request->user = $user;
 
         $middleware = new EntrustRole($guard);
 
@@ -114,7 +124,8 @@ class EntrustRoleTest extends TestCase
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(false);
-        $request->user()->shouldReceive('hasRole')->andReturn(true);
+        $request->user->shouldReceive('hasRole')->andReturn(true);
+
 
         $middleware->handle($request, function () {}, null, null);
 
@@ -123,6 +134,12 @@ class EntrustRoleTest extends TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertDidNotAbort();
+        $this->getExpectedException(null);
+    }
+}
+
+class Request {
+    public function user() {
+        return $this->user;
     }
 }
