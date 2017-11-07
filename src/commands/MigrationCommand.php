@@ -32,7 +32,7 @@ class MigrationCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $this->laravel->view->addNamespace('cerberus', substr(__DIR__, 0, -8) . 'views');
 
@@ -42,10 +42,14 @@ class MigrationCommand extends Command
         $permissionRoleTable = Config::get('cerberus.permission_role_table');
         $sitesTable          = Config::get('cerberus.sites_table');
 
-        $this->line('');
-        $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable");
+        $userFK = Config::get('cerberus.user_foreign_key');
+        $roleFK = Config::get('cerberus.role_foreign_key');
+        $siteFK = Config::get('cerberus.site_foreign_key');
 
-        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissionRoleTable'" .
+        $this->line('');
+        $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable, $sitesTable");
+
+        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissionRoleTable', '$sitesTable'" .
                    " tables will be created in database/migrations directory";
 
         $this->comment($message);
@@ -57,7 +61,7 @@ class MigrationCommand extends Command
 
             $this->info("Creating migration...");
             if ($this->createMigration($rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable,
-                $sitesTable)) {
+                $sitesTable, $userFK, $roleFK, $siteFK)) {
 
                 $this->info("Migration successfully created!");
             } else {

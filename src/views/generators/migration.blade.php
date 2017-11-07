@@ -15,6 +15,15 @@ class CerberusSetupTables extends Migration
         DB::beginTransaction();
 
         // Create table for storing roles
+        Schema::create('{{ $sitesTable }}', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->unique();
+            $table->string('display_name')->nullable();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
+        // Create table for storing roles
         Schema::create('{{ $rolesTable }}', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
@@ -25,15 +34,15 @@ class CerberusSetupTables extends Migration
 
         // Create table for associating roles to users (Many-to-Many)
         Schema::create('{{ $roleUserTable }}', function (Blueprint $table) {
-            $table->integer('user_id')->unsigned();
-            $table->integer('role_id')->unsigned();
-            $table->integer('site_id')->unsigned();
+            $table->integer('{{ $userFK }}')->unsigned();
+            $table->integer('{{ $roleFK }}')->unsigned();
+            $table->integer('{{ $siteFK }}')->unsigned();
 
-            $table->foreign('user_id')->references('{{ $userKeyName }}')->on('{{ $usersTable }}')
+            $table->foreign('{{ $userFK }}')->references('{{ $userKeyName }}')->on('{{ $usersTable }}')
                 ->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('role_id')->references('id')->on('{{ $rolesTable }}')
+            $table->foreign('{{ $roleFK }}')->references('id')->on('{{ $rolesTable }}')
                 ->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('role_id')->references('id')->on('{{ $sitesTable }}')
+            $table->foreign('{{ $siteFK }}')->references('id')->on('{{ $sitesTable }}')
                 ->onUpdate('cascade')->onDelete('cascade');
 
             $table->primary(['user_id', 'role_id', 'site_id']);
