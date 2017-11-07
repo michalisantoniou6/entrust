@@ -1,7 +1,7 @@
 {
-    "name": "michalisantoniou6/entrust",
-    "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
-    "keywords": ["laravel","illuminate","auth","roles","acl","permission"],
+    "name": "michalisantoniou6/laravel-cerberus",
+    "description": "This package provides a flexible way to add Multi-tenant Role-based Permissions to Laravel 5.*",
+    "keywords": ["laravel","illuminate","auth","roles","acl","permission","multi-tenant"],
     "license": "MIT",
     "authors": [
         {
