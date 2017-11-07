@@ -175,7 +175,7 @@ trait CerberusSiteUserTrait
             $role = $role['id'];
         }
 
-        if ( ! is_int($role)) {
+        if ( ! is_int((int)$role)) {
             throw new \Exception("Not a valid role id.");
         }
 
