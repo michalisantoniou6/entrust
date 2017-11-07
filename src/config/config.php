@@ -19,7 +19,7 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => 'App\Role',
+    'role'                   => 'App\Role',
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ return [
     | This is the roles table used by Entrust to save roles to the database.
     |
     */
-    'roles_table' => 'roles',
+    'roles_table'            => 'roles',
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +40,7 @@ return [
     | relation between permissions and roles & roles and users
     |
     */
-    'role_foreign_key' => 'role_id',
+    'role_foreign_key'       => 'role_id',
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
     | relation between permissions and roles, roles and users and users and sites
     |
     */
-    'site_foreign_key' => 'site_id',
+    'site_foreign_key'       => 'site_id',
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ return [
     | Update the User if it is in a different namespace.
     |
     */
-    'user' => 'App\User',
+    'user'                   => 'App\User',
 
     /*
     |--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ return [
     | database.
     |
     */
-    'users_table' => 'users',
+    'users_table'            => 'users',
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +84,7 @@ return [
     | database.
     |
     */
-    'role_user_site_table' => 'role_user_site',
+    'role_user_site_table'   => 'role_user_site',
 
     /*
     |--------------------------------------------------------------------------
@@ -95,7 +95,7 @@ return [
     | relation between roles and users
     |
     */
-    'user_foreign_key' => 'user_id',
+    'user_foreign_key'       => 'user_id',
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +106,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => 'App\Permission',
+    'permission'             => 'App\Permission',
 
     /*
     |--------------------------------------------------------------------------
@@ -117,7 +117,7 @@ return [
     | database.
     |
     */
-    'permissions_table' => 'permissions',
+    'permissions_table'      => 'permissions',
 
     /*
     |--------------------------------------------------------------------------
@@ -128,7 +128,7 @@ return [
     | between permissions and roles to the database.
     |
     */
-    'permission_role_table' => 'permission_role',
+    'permission_role_table'  => 'permission_role',
 
     /*
     |--------------------------------------------------------------------------
@@ -150,7 +150,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'site' => 'App\Site',
+    'site'                   => 'App\Site',
 
     /*
     |--------------------------------------------------------------------------
@@ -161,5 +161,18 @@ return [
     | database.
     |
     */
-    'sites_table' => 'sites',
+    'sites_table'            => 'sites',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Require site
+    |--------------------------------------------------------------------------
+    |
+    | This defined whether a $site will need to be passed to hasRole(), attachRole(), attachRoles(),
+    | detachRole(), detachRoles(), ability()
+    | Set to false if you do not want the above methods to require $site. For example, if you want some
+    | modules in your application to be used by all users who have a certain role, regardless of site.
+    |
+    */
+    'require_site'            => true,
 ];

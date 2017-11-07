@@ -75,6 +75,8 @@ trait EntrustUserTrait
      */
     public function ability($roles, $permissions, $options = [], $site)
     {
+        $this->validateSite($site);
+
         // Convert string to array if that's what is passed in.
         if ( ! is_array($roles)) {
             $roles = explode(',', $roles);
@@ -143,6 +145,8 @@ trait EntrustUserTrait
      */
     public function hasRole($name, $requireAll = false, $site)
     {
+        $this->validateSite($site);
+
         if (is_array($name)) {
             foreach ($name as $roleName) {
                 $hasRole = $this->hasRole($roleName, false, $site);
@@ -242,6 +246,8 @@ trait EntrustUserTrait
      */
     public function attachRoles($roles, $site)
     {
+        $this->validateSite($site);
+
         foreach ($roles as $role) {
             $this->attachRole($role, $site);
         }
@@ -255,6 +261,8 @@ trait EntrustUserTrait
      */
     public function attachRole($role, $site)
     {
+        $this->validateSite($site);
+
         if (is_object($role)) {
             $role = $role->getKey();
         }
@@ -276,6 +284,8 @@ trait EntrustUserTrait
      */
     public function detachRoles($roles = null, $site)
     {
+        $this->validateSite($site);
+
         if ( ! $roles) {
             $roles = $this->roles()->where(Config::get('entrust.site_foreign_key'), '=', $site)->get();
         }
@@ -295,6 +305,8 @@ trait EntrustUserTrait
      */
     public function detachRole($role, $site)
     {
+        $this->validateSite($site);
+
         if (is_object($role)) {
             $role = $role->getKey();
         }
@@ -309,4 +321,28 @@ trait EntrustUserTrait
         ])->delete();
     }
 
+    /**
+     * Checks whether $site is required and $site is empty.
+     *
+     * @param $site
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function validateSite($site) {
+        if (!$site && $this->isSiteRequired()) {
+            throw new \Exception("The site is required.");
+        }
+
+        return true;
+    }
+
+    /**
+     * Retrieves require_site from config
+     *
+     * @return bool
+     */
+    public function isSiteRequired() {
+        return (boolean) Config::get('entrust.require_site');
+    }
 }
