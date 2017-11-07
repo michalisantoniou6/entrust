@@ -1,4 +1,8 @@
-# ENTRUST (Laravel 5 Package)
+# ENTRUST (Laravel 5.* Package)
+
+#### This package was forked from [Zicaco Entrust](https://github.com/Zizaco/entrust)
+##### It offers the same functionality as the original package, along with multi tenant site capabilities.
+##### EntrustSiteUserTrait and some config options are added. More Documentation coming soon  
 
 [![Build Status](https://travis-ci.org/Zizaco/entrust.svg)](https://travis-ci.org/Zizaco/entrust)
 [![Version](https://img.shields.io/packagist/v/Zizaco/entrust.svg)](https://packagist.org/packages/zizaco/entrust)
@@ -163,12 +167,15 @@ Next, use the `EntrustUserTrait` trait in your existing `User` model. For exampl
 <?php
 
 use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
+use Michalisantoniou6\Entrust\Traits\EntrustSiteUserTrait;
 
 class User extends Eloquent
 {
     use EntrustUserTrait; // add this trait to your user model
 
-    ...
+    use EntrustSiteUserTrait; //optionally, add this trait (in addition to the one above) for multi-tenant capabilities
+    
+    //...
 }
 ```
 
