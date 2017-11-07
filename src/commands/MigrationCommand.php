@@ -1,11 +1,11 @@
-<?php namespace Zizaco\Entrust;
+<?php namespace Michalisantoniou6\Entrust;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 use Illuminate\Console\Command;
@@ -37,7 +37,7 @@ class MigrationCommand extends Command
         $this->laravel->view->addNamespace('entrust', substr(__DIR__, 0, -8).'views');
 
         $rolesTable          = Config::get('entrust.roles_table');
-        $roleUserTable       = Config::get('entrust.role_user_table');
+        $roleUserTable       = Config::get('entrust.role_user_site_table');
         $permissionsTable    = Config::get('entrust.permissions_table');
         $permissionRoleTable = Config::get('entrust.permission_role_table');
 

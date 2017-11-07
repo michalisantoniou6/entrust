@@ -1,11 +1,11 @@
-<?php namespace Zizaco\Entrust\Middleware;
+<?php namespace Michalisantoniou6\Entrust\Middleware;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 use Closure;
@@ -27,21 +27,23 @@ class EntrustRole
 		$this->auth = $auth;
 	}
 
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  Closure $next
-	 * @param  $roles
-	 * @return mixed
-	 */
-	public function handle($request, Closure $next, $roles)
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  Closure $next
+     * @param  $roles
+     * @param  $site
+     *
+     * @return mixed
+     */
+	public function handle($request, Closure $next, $roles, $site)
 	{
 		if (!is_array($roles)) {
 			$roles = explode(self::DELIMITER, $roles);
 		}
 
-		if ($this->auth->guest() || !$request->user()->hasRole($roles)) {
+		if ($this->auth->guest() || !$request->user()->hasRole($roles, false, $site)) {
 			abort(403);
 		}
 

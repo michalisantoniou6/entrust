@@ -1,15 +1,16 @@
-<?php namespace Zizaco\Entrust\Middleware;
+<?php namespace Michalisantoniou6\Entrust\Middleware;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Config;
 
 class EntrustAbility
 {
@@ -35,9 +36,10 @@ class EntrustAbility
 	 * @param $roles
 	 * @param $permissions
 	 * @param bool $validateAll
+     * @param mixed $site
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
+	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false, $site)
 	{
 		if (!is_array($roles)) {
 			$roles = explode(self::DELIMITER, $roles);
@@ -51,7 +53,12 @@ class EntrustAbility
 			$validateAll = filter_var($validateAll, FILTER_VALIDATE_BOOLEAN);
 		}
 
-		if ($this->auth->guest() || !$request->user()->ability($roles, $permissions, [ 'validate_all' => $validateAll ])) {
+		if (is_a($site, Config::get('entrust.site'))) {
+		    $obj = app(Config::get('entrust.site'));
+		    $site = $site->{$obj->primaryKey};
+        }
+
+		if ($this->auth->guest() || !$request->user()->ability($roles, $permissions, [ 'validate_all' => $validateAll ], $site)) {
 			abort(403);
 		}
 

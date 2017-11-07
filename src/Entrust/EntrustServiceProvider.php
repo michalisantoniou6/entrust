@@ -1,11 +1,11 @@
-<?php namespace Zizaco\Entrust;
+<?php namespace Michalisantoniou6\Entrust;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Michalisantoniou6\Entrust
  */
 
 use Illuminate\Support\ServiceProvider;
@@ -100,7 +100,7 @@ class EntrustServiceProvider extends ServiceProvider
             return new Entrust($app);
         });
 
-        $this->app->alias('entrust', 'Zizaco\Entrust\Entrust');
+        $this->app->alias('entrust', 'Michalisantoniou6\Entrust\Entrust');
     }
 
     /**

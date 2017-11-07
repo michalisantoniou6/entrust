@@ -46,13 +46,13 @@ contains the latest entrust version for Laravel 4.
 2) Open your `config/app.php` and add the following to the `providers` array:
 
 ```php
-Zizaco\Entrust\EntrustServiceProvider::class,
+Michalisantoniou6\Entrust\EntrustServiceProvider::class,
 ```
 
 3) In the same `config/app.php` and add the following to the `aliases ` array: 
 
 ```php
-'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
+'Entrust'   => Michalisantoniou6\Entrust\EntrustFacade::class,
 ```
 
 4) Run the command below to publish the package config file `config/entrust.php`:
@@ -76,9 +76,9 @@ php artisan vendor:publish
 6)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also need to add the following:
 
 ```php
-    'role' => \Zizaco\Entrust\Middleware\EntrustRole::class,
-    'permission' => \Zizaco\Entrust\Middleware\EntrustPermission::class,
-    'ability' => \Zizaco\Entrust\Middleware\EntrustAbility::class,
+    'role' => \Michalisantoniou6\Entrust\Middleware\EntrustRole::class,
+    'permission' => \Michalisantoniou6\Entrust\Middleware\EntrustPermission::class,
+    'ability' => \Michalisantoniou6\Entrust\Middleware\EntrustAbility::class,
 ```
 
 to `routeMiddleware` array in `app/Http/Kernel.php`.
@@ -120,7 +120,7 @@ Create a Role model inside `app/models/Role.php` using the following example:
 ```php
 <?php namespace App;
 
-use Zizaco\Entrust\EntrustRole;
+use Michalisantoniou6\Entrust\EntrustRole;
 
 class Role extends EntrustRole
 {
@@ -141,7 +141,7 @@ Create a Permission model inside `app/models/Permission.php` using the following
 ```php
 <?php namespace App;
 
-use Zizaco\Entrust\EntrustPermission;
+use Michalisantoniou6\Entrust\EntrustPermission;
 
 class Permission extends EntrustPermission
 {
@@ -162,7 +162,7 @@ Next, use the `EntrustUserTrait` trait in your existing `User` model. For exampl
 ```php
 <?php
 
-use Zizaco\Entrust\Traits\EntrustUserTrait;
+use Michalisantoniou6\Entrust\Traits\EntrustUserTrait;
 
 class User extends Eloquent
 {
