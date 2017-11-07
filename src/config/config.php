@@ -151,4 +151,15 @@ return [
     |
     */
     'site' => 'App\Site',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Entrust Sites Table
+    |--------------------------------------------------------------------------
+    |
+    | This is the permissions table used by Entrust to save permissions to the
+    | database.
+    |
+    */
+    'sites_table' => 'sites',
 ];
