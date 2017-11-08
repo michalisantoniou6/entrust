@@ -10,6 +10,7 @@
 
 namespace Michalisantoniou6\Cerberus\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -18,6 +19,52 @@ use Illuminate\Support\Facades\Cache;
 
 trait CerberusSiteUserTrait
 {
+    /**
+     * Check if user has a permission by its name.
+     *
+     * @param string|array $permission Permission string or array of permissions.
+     * @param bool $requireAll All permissions in the array are required.
+     *
+     * @return bool
+     */
+    public function canForSite($permission, $site, $requireAll = false)
+    {
+        if (is_a(Model::class, $site)) {
+            $site = $site->getKey();
+        }
+
+        if (is_array($permission)) {
+            foreach ($permission as $permName) {
+                $hasPerm = $this->can($permName);
+
+                if ($hasPerm && ! $requireAll) {
+                    return true;
+                } elseif ( ! $hasPerm && $requireAll) {
+                    return false;
+                }
+            }
+
+            // If we've made it this far and $requireAll is FALSE, then NONE of the perms were found
+            // If we've made it this far and $requireAll is TRUE, then ALL of the perms were found.
+            // Return the value of $requireAll;
+            return $requireAll;
+        } else {
+            foreach ($this->cachedRoles() as $role) {
+                if ($role->pivot->{Config::get('cerberus.site_foreign_key')} != $site) {
+                    continue;
+                }
+                // Validate against the Permission table
+                foreach ($role->cachedPermissions() as $perm) {
+                    if (str_is($permission, $perm->name)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
@@ -239,7 +286,7 @@ trait CerberusSiteUserTrait
             $role = $role['id'];
         }
 
-        if ( ! is_int((int)$role)) {
+        if ( ! is_numeric($role)) {
             throw new \Exception("Not a valid role id.");
         }
 
