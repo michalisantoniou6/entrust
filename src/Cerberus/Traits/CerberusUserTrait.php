@@ -184,8 +184,7 @@ trait CerberusUserTrait
     public function roles()
     {
         return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.role_user_site_table'),
-            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'))
-                    ->withPivot(Config::get('cerberus.site_foreign_key'));
+            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'));
     }
 
     /**
@@ -263,7 +262,7 @@ trait CerberusUserTrait
     public function detachRoles($roles = null)
     {
         if ( ! $roles) {
-            $roles = $this->roles;
+            $roles = $this->roles()->get();
         }
         foreach ($roles as $role) {
             $this->detachRole($role);
