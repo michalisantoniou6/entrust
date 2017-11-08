@@ -14,14 +14,16 @@ class CerberusSetupTables extends Migration
     {
         DB::beginTransaction();
 
-        // Create table for storing roles
-        Schema::create('{{ $sitesTable }}', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name')->unique();
-            $table->string('display_name')->nullable();
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
+        // Create table for storing sites
+        // Feel free to add/remove fields before running the migration.
+        if (!Schema::hasTable('{{ $sitesTable }}') {
+            Schema::create('{{ $sitesTable }}', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('domain')->unique();
+                $table->string('name')->nullable();
+                $table->timestamps();
+            });
+        }
 
         // Create table for storing roles
         Schema::create('{{ $rolesTable }}', function (Blueprint $table) {
