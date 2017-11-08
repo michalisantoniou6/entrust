@@ -13,9 +13,73 @@ namespace Michalisantoniou6\Cerberus\Traits;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Illuminate\Cache\TaggableStore;
+use Illuminate\Support\Facades\Cache;
 
 trait CerberusSiteUserTrait
 {
+    public function cachedRoles()
+    {
+        $userPrimaryKey = $this->primaryKey;
+        $cacheKey       = 'cerberus_roles_for_user_' . $this->$userPrimaryKey;
+        if (Cache::getStore() instanceof TaggableStore) {
+            return Cache::tags(Config::get('cerberus.role_user_site_table'))->remember($cacheKey,
+                Config::get('cache.ttl'), function () {
+                    return $this->roles()->get();
+                });
+        } else {
+            return $this->roles()->get();
+        }
+    }
+
+    /**
+     * Checks if the user has a role by its name.
+     *
+     * @param string|array $name Role name or array of role names.
+     * @param bool $requireAll All roles in the array are required.
+     *
+     * @return bool
+     */
+    public function hasRole($name, $requireAll = false)
+    {
+        if (is_array($name)) {
+            foreach ($name as $roleName) {
+                $hasRole = $this->hasRole($roleName, false);
+
+                if ($hasRole && ! $requireAll) {
+                    return true;
+                } elseif ( ! $hasRole && $requireAll) {
+                    return false;
+                }
+            }
+
+            // If we've made it this far and $requireAll is FALSE, then NONE of the roles were found
+            // If we've made it this far and $requireAll is TRUE, then ALL of the roles were found.
+            // Return the value of $requireAll;
+            return $requireAll;
+        } else {
+            foreach ($this->cachedRoles() as $role) {
+                if ($role->name == $name) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Many-to-Many relations with Role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.role_user_site_table'),
+            Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'))
+                    ->withPivot(Config::get('cerberus.site_foreign_key'));
+    }
+
     /**
      * Checks role(s) and permission(s).
      *

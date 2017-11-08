@@ -15,52 +15,6 @@ use InvalidArgumentException;
 
 trait CerberusUserTrait
 {
-    //Big block of caching functionality.
-    /**
-     * Boot the user model
-     * Attach event listener to remove the many-to-many records when trying to delete
-     * Will NOT delete any records if the user model uses soft deletes.
-     *
-     * @return void|bool
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($user) {
-            if ( ! method_exists(Config::get('auth.model'), 'bootSoftDeletes')) {
-                $user->roles()->sync([]);
-            }
-
-            return true;
-        });
-    }
-
-    public function save(array $options = [])
-    {   //both inserts and updates
-        if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
-        }
-
-        return parent::save($options);
-    }
-
-    public function delete(array $options = [])
-    {   //soft or hard
-        parent::delete($options);
-        if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
-        }
-    }
-
-    public function restore()
-    {   //soft delete undo's
-        parent::restore();
-        if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.role_user_site_table'))->flush();
-        }
-    }
-
     /**
      * Checks role(s) and permission(s).
      *

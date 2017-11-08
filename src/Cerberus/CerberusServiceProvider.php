@@ -8,7 +8,9 @@
  * @package Michalisantoniou6\Cerberus
  */
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Michalisantoniou6\Cerberus\Observers\UserObserver;
 
 class CerberusServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,13 @@ class CerberusServiceProvider extends ServiceProvider
         }
 
         $this->bladeDirectives();
+
+        $this->registerUserObserver();
+    }
+
+    private function registerUserObserver() {
+        $userModel = app(Config::get('cerberus.user'));
+        $userModel::observe(UserObserver::class);
     }
 
     /**
