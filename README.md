@@ -18,8 +18,6 @@ Cerberus is a flexible way to add Role-based Permissions to Laravel 5.*
         - [User ability](#user-ability)
     - [Blade templates](#blade-templates)
     - [Middleware](#middleware)
-    - [Short syntax route filter](#short-syntax-route-filter)
-    - [Route filter](#route-filter)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 - [Contribution guidelines](#contribution-guidelines)
