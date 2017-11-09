@@ -39,6 +39,12 @@ Alternatively, you can add just the following to your composer.json. Then run `c
 "michalisantoniou6/cerberus": "2.*"
 ```
 
+Require `dev-master` if you wish to always get the most recent stable version.
+
+```json
+"michalisantoniou6/cerberus": "dev-master"
+```
+
 2) Open your `config/app.php` and add the following to the `providers` array. You can skip this if you're on Laravel 5.5, as the package will register itsself.
 
 ```php
@@ -396,6 +402,26 @@ Three directives are available for use within your Blade templates. What you giv
     \Cerberus::ability('admin,owner', 'create-post,edit-user')</p>
 @endability
 ```
+
+Similarly, you can assume Blade directives for multi-tenancy methods.
+
+```php
+@roleforsite('admin', 15)
+    <p>This is visible to users with the admin role for site with id 15. Gets translated to 
+    \Cerberus::roleForSite('admin', 15)</p>
+@endroleforsite
+
+@permissionforsite('manage-admins', 15)
+    <p>This is visible to users with the given permissions for site with id 15. Gets translated to 
+    \Cerberus::hasPermissionForSite('manage-admins', 15). The @can directive is already taken by core 
+    laravel authorization package, hence the @permission directive instead.</p>
+@endpermissionforsite
+
+@abilityforsite('admin,owner', 'create-post,edit-user', 15)
+    <p>This is visible to users with the given abilities for site with id 15. Gets translated to 
+    \Cerberus::abilityForSite('admin,owner', 'create-post,edit-user', 15)</p>
+@endabilityforsite
+``` 
 
 ### Middleware
 

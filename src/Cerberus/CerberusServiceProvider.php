@@ -59,7 +59,7 @@ class CerberusServiceProvider extends ServiceProvider
             return;
         }
 
-        // Call to Cerberus::hasRole
+        //single tenant
         \Blade::directive('role', function ($expression) {
             return "<?php if (\\Cerberus::hasRole({$expression})) : ?>";
         });
@@ -68,7 +68,6 @@ class CerberusServiceProvider extends ServiceProvider
             return "<?php endif; // Cerberus::hasRole ?>";
         });
 
-        // Call to Cerberus::hasPermission
         \Blade::directive('permission', function ($expression) {
             return "<?php if (\\Cerberus::hasPermission({$expression})) : ?>";
         });
@@ -84,6 +83,32 @@ class CerberusServiceProvider extends ServiceProvider
 
         \Blade::directive('endability', function ($expression) {
             return "<?php endif; // Cerberus::ability ?>";
+        });
+
+        //multi tenant
+        \Blade::directive('roleforsite', function ($expression) {
+            return "<?php if (\\Cerberus::hasRoleForSite({$expression})) : ?>";
+        });
+
+        \Blade::directive('endroleforsite', function ($expression) {
+            return "<?php endif; // Cerberus::hasRoleForSite ?>";
+        });
+
+        \Blade::directive('permissionforsite', function ($expression) {
+            return "<?php if (\\Cerberus::hasPermissionForSite({$expression})) : ?>";
+        });
+
+        \Blade::directive('endpermissionforsite', function ($expression) {
+            return "<?php endif; // Cerberus::hasPermissionForSite ?>";
+        });
+
+        // Call to Cerberus::ability
+        \Blade::directive('abilityforsite', function ($expression) {
+            return "<?php if (\\Cerberus::abilityForSite({$expression})) : ?>";
+        });
+
+        \Blade::directive('endabilityforsite', function ($expression) {
+            return "<?php endif; // Cerberus::abilityForSite ?>";
         });
     }
 
