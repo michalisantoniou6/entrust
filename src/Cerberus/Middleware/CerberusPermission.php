@@ -41,7 +41,7 @@ class CerberusPermission
 			$permissions = explode(self::DELIMITER, $permissions);
 		}
 
-		if ($this->auth->guest() || !$request->user()->can($permissions)) {
+		if ($this->auth->guest() || !$request->user()->hasPermission($permissions)) {
 			abort(403);
 		}
 

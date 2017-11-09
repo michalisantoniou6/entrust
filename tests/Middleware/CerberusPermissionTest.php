@@ -23,7 +23,7 @@ class CerberusPermissionTest extends MiddlewareTest
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(true);
-        $request->user()->shouldReceive('can')->andReturn(false);
+        $request->user()->shouldReceive('hasPermission')->andReturn(false);
 
         $middleware->handle($request, function () {}, null, null, true);
 
@@ -53,7 +53,7 @@ class CerberusPermissionTest extends MiddlewareTest
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(true);
-        $request->user()->shouldReceive('can')->andReturn(true);
+        $request->user()->shouldReceive('hasPermission')->andReturn(true);
 
         $middleware->handle($request, function () {}, null, null);
 
@@ -83,7 +83,7 @@ class CerberusPermissionTest extends MiddlewareTest
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(false);
-        $request->user()->shouldReceive('can')->andReturn(false);
+        $request->user()->shouldReceive('hasPermission')->andReturn(false);
 
         $middleware->handle($request, function () {}, null, null);
 
@@ -113,7 +113,7 @@ class CerberusPermissionTest extends MiddlewareTest
         |------------------------------------------------------------
         */
         $guard->shouldReceive('guest')->andReturn(false);
-        $request->user()->shouldReceive('can')->andReturn(true);
+        $request->user()->shouldReceive('hasPermission')->andReturn(true);
 
         $middleware->handle($request, function () {}, null, null);
 

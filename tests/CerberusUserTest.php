@@ -146,15 +146,15 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($user->can('manage_a'));
-        $this->assertTrue($user->can('manage_b'));
-        $this->assertTrue($user->can('manage_c'));
-        $this->assertFalse($user->can('manage_d'));
+        $this->assertTrue($user->hasPermission('manage_a'));
+        $this->assertTrue($user->hasPermission('manage_b'));
+        $this->assertTrue($user->hasPermission('manage_c'));
+        $this->assertFalse($user->hasPermission('manage_d'));
 
-        $this->assertTrue($user->can(['manage_a', 'manage_b', 'manage_c']));
-        $this->assertTrue($user->can(['manage_a', 'manage_b', 'manage_d']));
-        $this->assertFalse($user->can(['manage_a', 'manage_b', 'manage_d'], true));
-        $this->assertFalse($user->can(['manage_d', 'manage_e']));
+        $this->assertTrue($user->hasPermission(['manage_a', 'manage_b', 'manage_c']));
+        $this->assertTrue($user->hasPermission(['manage_a', 'manage_b', 'manage_d']));
+        $this->assertFalse($user->hasPermission(['manage_a', 'manage_b', 'manage_d'], true));
+        $this->assertFalse($user->hasPermission(['manage_d', 'manage_e']));
     }
 
 
@@ -192,13 +192,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($user->can('admin.posts'));
-        $this->assertTrue($user->can('admin.pages'));
-        $this->assertTrue($user->can('admin.users'));
-        $this->assertFalse($user->can('admin.config'));
+        $this->assertTrue($user->hasPermission('admin.posts'));
+        $this->assertTrue($user->hasPermission('admin.pages'));
+        $this->assertTrue($user->hasPermission('admin.users'));
+        $this->assertFalse($user->hasPermission('admin.config'));
 
-        $this->assertTrue($user->can(['admin.*']));
-        $this->assertFalse($user->can(['site.*']));
+        $this->assertTrue($user->hasPermission(['admin.*']));
+        $this->assertFalse($user->hasPermission(['site.*']));
     }
 
 
@@ -252,10 +252,10 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
              ->andReturn(false);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
              ->andReturn(true);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
              ->andReturn(false);
 
@@ -376,10 +376,10 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
              ->andReturn(false);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
              ->andReturn(true);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
              ->andReturn(false);
 
@@ -538,10 +538,10 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
              ->andReturn(false);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
              ->andReturn(true);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
              ->andReturn(false);
 
@@ -714,10 +714,10 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('hasRole')
              ->with('NonUserRoleB', m::anyOf(true, false))
              ->andReturn(false);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf('user_can_a', 'user_can_b', 'user_can_c'), m::anyOf(true, false))
              ->andReturn(true);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with('user_cannot_b', m::anyOf(true, false))
              ->andReturn(false);
 
@@ -790,10 +790,10 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
              ->andReturn(false);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
              ->andReturn(true);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
              ->andReturn(false);
 
@@ -899,7 +899,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         */
         $user->shouldReceive('hasRole')
              ->times(3);
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
              ->times(3);
 
         /*

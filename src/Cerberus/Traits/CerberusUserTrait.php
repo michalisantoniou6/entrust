@@ -59,7 +59,7 @@ trait CerberusUserTrait
             $checkedRoles[$role] = $this->hasRole($role);
         }
         foreach ($permissions as $permission) {
-            $checkedPermissions[$permission] = $this->can($permission);
+            $checkedPermissions[$permission] = $this->hasPermission($permission);
         }
         // If validate all and there is a false in either
         // Check that if validate all, then there should not be any false.
@@ -149,11 +149,11 @@ trait CerberusUserTrait
      *
      * @return bool
      */
-    public function can($permission, $requireAll = false)
+    public function hasPermission($permission, $requireAll = false)
     {
         if (is_array($permission)) {
             foreach ($permission as $permName) {
-                $hasPerm = $this->can($permName);
+                $hasPerm = $this->hasPermission($permName);
 
                 if ($hasPerm && ! $requireAll) {
                     return true;

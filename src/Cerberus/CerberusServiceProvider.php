@@ -68,13 +68,13 @@ class CerberusServiceProvider extends ServiceProvider
             return "<?php endif; // Cerberus::hasRole ?>";
         });
 
-        // Call to Cerberus::can
+        // Call to Cerberus::hasPermission
         \Blade::directive('permission', function ($expression) {
-            return "<?php if (\\Cerberus::can({$expression})) : ?>";
+            return "<?php if (\\Cerberus::hasPermission({$expression})) : ?>";
         });
 
         \Blade::directive('endpermission', function ($expression) {
-            return "<?php endif; // Cerberus::can ?>";
+            return "<?php endif; // Cerberus::hasPermission ?>";
         });
 
         // Call to Cerberus::ability

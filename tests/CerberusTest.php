@@ -127,12 +127,12 @@ class CerberusTest extends PHPUnit_Framework_TestCase
             ->andReturn(false)
             ->once()->ordered();
 
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
             ->with('user_can', false)
             ->andReturn(true)
             ->once();
 
-        $user->shouldReceive('can')
+        $user->shouldReceive('hasPermission')
             ->with('user_cannot', false)
             ->andReturn(false)
             ->once();
@@ -142,9 +142,9 @@ class CerberusTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($cerberus->can('user_can'));
-        $this->assertFalse($cerberus->can('user_cannot'));
-        $this->assertFalse($cerberus->can('any_permission'));
+        $this->assertTrue($cerberus->hasPermission('user_can'));
+        $this->assertFalse($cerberus->hasPermission('user_cannot'));
+        $this->assertFalse($cerberus->hasPermission('any_permission'));
     }
 
     public function testUser()
@@ -343,7 +343,7 @@ class CerberusTest extends PHPUnit_Framework_TestCase
      */
     public function testFilterGeneratedByRouteNeedsPermission($returnValue, $filterTest, $abort = false, $expectedResponse = null)
     {
-        $this->filterTestExecution('routeNeedsPermission', 'can', $returnValue, $filterTest, $abort, $expectedResponse);
+        $this->filterTestExecution('routeNeedsPermission', 'hasPermission', $returnValue, $filterTest, $abort, $expectedResponse);
     }
 
     protected function filterTestExecution($methodTested, $mockedMethod, $returnValue, $filterTest, $abort, $expectedResponse)
@@ -401,7 +401,7 @@ class CerberusTest extends PHPUnit_Framework_TestCase
     ) {
         $app         = m::mock('Illuminate\Foundation\Application');
         $app->router = m::mock('Route');
-        $cerberus     = m::mock('Michalisantoniou6\Cerberus\Cerberus[hasRole, can]', [$app]);
+        $cerberus     = m::mock('Michalisantoniou6\Cerberus\Cerberus[hasRole, hasPermission]', [$app]);
 
         // Static values
         $route      = 'route';
@@ -413,7 +413,7 @@ class CerberusTest extends PHPUnit_Framework_TestCase
         $app->router->shouldReceive('filter')->with($filterName, m::on($this->$filterTest))->once();
 
         $cerberus->shouldReceive('hasRole')->with($roleName, $requireAll)->andReturn($roleIsValid)->once();
-        $cerberus->shouldReceive('can')->with($permName, $requireAll)->andReturn($permIsValid)->once();
+        $cerberus->shouldReceive('hasPermission')->with($permName, $requireAll)->andReturn($permIsValid)->once();
 
         if ($abort) {
             $app->shouldReceive('abort')->with(403)->andThrow('Exception', 'abort')->once();
