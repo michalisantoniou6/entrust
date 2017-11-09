@@ -41,7 +41,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $belongsToMany = m::mock('BelongsToMany');
+        $belongsToMany = new stdClass();
         $user = m::mock('HasRoleUser')->makePartial();
 
         /*
@@ -49,22 +49,18 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-        $belongsToMany->shouldReceive('withPivot')->andReturn($belongsToMany);
-
         $user->shouldReceive('belongsToMany')
-            ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
-            ->andReturn($belongsToMany)
-            ->once();
+             ->with('role_table_name', 'assigned_roles_table_name', 'user_id', 'role_id')
+             ->andReturn($belongsToMany)
+             ->once();
 
         Config::shouldReceive('get')->once()->with('cerberus.role')
-            ->andReturn('role_table_name');
+              ->andReturn('role_table_name');
         Config::shouldReceive('get')->once()->with('cerberus.role_user_site_table')
-            ->andReturn('assigned_roles_table_name');
+              ->andReturn('assigned_roles_table_name');
         Config::shouldReceive('get')->once()->with('cerberus.user_foreign_key')
-            ->andReturn('user_id');
+              ->andReturn('user_id');
         Config::shouldReceive('get')->once()->with('cerberus.role_foreign_key')
-            ->andReturn('role_id');
-        Config::shouldReceive('get')->once()->with('cerberus.site_foreign_key')
               ->andReturn('role_id');
 
         /*
@@ -150,15 +146,15 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($user->can('manage_a'));
-        $this->assertTrue($user->can('manage_b'));
-        $this->assertTrue($user->can('manage_c'));
-        $this->assertFalse($user->can('manage_d'));
+        $this->assertTrue($user->hasPermission('manage_a'));
+        $this->assertTrue($user->hasPermission('manage_b'));
+        $this->assertTrue($user->hasPermission('manage_c'));
+        $this->assertFalse($user->hasPermission('manage_d'));
 
-        $this->assertTrue($user->can(['manage_a', 'manage_b', 'manage_c']));
-        $this->assertTrue($user->can(['manage_a', 'manage_b', 'manage_d']));
-        $this->assertFalse($user->can(['manage_a', 'manage_b', 'manage_d'], true));
-        $this->assertFalse($user->can(['manage_d', 'manage_e']));
+        $this->assertTrue($user->hasPermission(['manage_a', 'manage_b', 'manage_c']));
+        $this->assertTrue($user->hasPermission(['manage_a', 'manage_b', 'manage_d']));
+        $this->assertFalse($user->hasPermission(['manage_a', 'manage_b', 'manage_d'], true));
+        $this->assertFalse($user->hasPermission(['manage_d', 'manage_e']));
     }
 
 
@@ -196,13 +192,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
-        $this->assertTrue($user->can('admin.posts'));
-        $this->assertTrue($user->can('admin.pages'));
-        $this->assertTrue($user->can('admin.users'));
-        $this->assertFalse($user->can('admin.config'));
+        $this->assertTrue($user->hasPermission('admin.posts'));
+        $this->assertTrue($user->hasPermission('admin.pages'));
+        $this->assertTrue($user->hasPermission('admin.users'));
+        $this->assertFalse($user->hasPermission('admin.config'));
 
-        $this->assertTrue($user->can(['admin.*']));
-        $this->assertFalse($user->can(['site.*']));
+        $this->assertTrue($user->hasPermission(['admin.*']));
+        $this->assertFalse($user->hasPermission(['site.*']));
     }
 
 
@@ -251,17 +247,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -375,17 +371,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -537,17 +533,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -713,17 +709,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('getStore')->times(8)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf('UserRoleA', 'UserRoleB'), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf('UserRoleA', 'UserRoleB'), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with('NonUserRoleB', m::anyOf(true, false))
-            ->andReturn(false);
-        $user->shouldReceive('can')
-            ->with(m::anyOf('user_can_a', 'user_can_b', 'user_can_c'), m::anyOf(true, false))
-            ->andReturn(true);
-        $user->shouldReceive('can')
-            ->with('user_cannot_b', m::anyOf(true, false))
-            ->andReturn(false);
+             ->with('NonUserRoleB', m::anyOf(true, false))
+             ->andReturn(false);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf('user_can_a', 'user_can_b', 'user_can_c'), m::anyOf(true, false))
+             ->andReturn(true);
+        $user->shouldReceive('hasPermission')
+             ->with('user_cannot_b', m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -789,17 +785,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
 
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
-            ->andReturn(true);
+             ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
+             ->andReturn(true);
         $user->shouldReceive('hasRole')
-            ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
-            ->andReturn(false);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
-            ->andReturn(true);
-        $user->shouldReceive('can')
-            ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
-            ->andReturn(false);
+             ->with(m::anyOf($nonUserRoleNameA, $nonUserRoleNameB), m::anyOf(true, false))
+             ->andReturn(false);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($userPermNameA, $userPermNameB, $userPermNameC), m::anyOf(true, false))
+             ->andReturn(true);
+        $user->shouldReceive('hasPermission')
+             ->with(m::anyOf($nonUserPermNameA, $nonUserPermNameB), m::anyOf(true, false))
+             ->andReturn(false);
 
         /*
         |------------------------------------------------------------
@@ -902,9 +898,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $user->shouldReceive('hasRole')
-            ->times(3);
-        $user->shouldReceive('can')
-            ->times(3);
+             ->times(3);
+        $user->shouldReceive('hasPermission')
+             ->times(3);
 
         /*
         |------------------------------------------------------------
@@ -935,19 +931,19 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $roleObject->shouldReceive('getKey')
-            ->andReturn(1);
+                   ->andReturn(1);
 
         $user->shouldReceive('roles')
-            ->andReturn($user);
+             ->andReturn($user);
         $user->shouldReceive('attach')
-            ->with(1)
-            ->once()->ordered();
+             ->with(1)
+             ->once()->ordered();
         $user->shouldReceive('attach')
-            ->with(2)
-            ->once()->ordered();
+             ->with(2)
+             ->once()->ordered();
         $user->shouldReceive('attach')
-            ->with(3)
-            ->once()->ordered();
+             ->with(3)
+             ->once()->ordered();
 
         /*
         |------------------------------------------------------------
@@ -977,19 +973,19 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $roleObject->shouldReceive('getKey')
-            ->andReturn(1);
+                   ->andReturn(1);
 
         $user->shouldReceive('roles')
-            ->andReturn($user);
+             ->andReturn($user);
         $user->shouldReceive('detach')
-            ->with(1)
-            ->once()->ordered();
+             ->with(1)
+             ->once()->ordered();
         $user->shouldReceive('detach')
-            ->with(2)
-            ->once()->ordered();
+             ->with(2)
+             ->once()->ordered();
         $user->shouldReceive('detach')
-            ->with(3)
-            ->once()->ordered();
+             ->with(3)
+             ->once()->ordered();
 
 
         /*
@@ -1017,14 +1013,14 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $user->shouldReceive('attachRole')
-            ->with(1)
-            ->once()->ordered();
+             ->with(1)
+             ->once()->ordered();
         $user->shouldReceive('attachRole')
-            ->with(2)
-            ->once()->ordered();
+             ->with(2)
+             ->once()->ordered();
         $user->shouldReceive('attachRole')
-            ->with(3)
-            ->once()->ordered();
+             ->with(3)
+             ->once()->ordered();
 
         /*
         |------------------------------------------------------------
@@ -1049,14 +1045,14 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $user->shouldReceive('detachRole')
-            ->with(1)
-            ->once()->ordered();
+             ->with(1)
+             ->once()->ordered();
         $user->shouldReceive('detachRole')
-            ->with(2)
-            ->once()->ordered();
+             ->with(2)
+             ->once()->ordered();
         $user->shouldReceive('detachRole')
-            ->with(3)
-            ->once()->ordered();
+             ->with(3)
+             ->once()->ordered();
 
         /*
         |------------------------------------------------------------
@@ -1079,11 +1075,24 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user = m::mock('HasRoleUser')->makePartial();
         $user->roles = [$roleA, $roleB];
 
+        $relationship = m::mock('BelongsToMany');
+
         /*
         |------------------------------------------------------------
         | Expectation
         |------------------------------------------------------------
         */
+        Config::shouldReceive('get')->with('cerberus.role')->once()->andReturn('App\Role');
+        Config::shouldReceive('get')->with('cerberus.role_user_site_table')->once()->andReturn('role_user');
+        Config::shouldReceive('get')->with('cerberus.user_foreign_key')->once()->andReturn('user_id');
+        Config::shouldReceive('get')->with('cerberus.role_foreign_key')->once()->andReturn('role_id');
+
+        $relationship->shouldReceive('get')
+                     ->andReturn($user->roles)->once();
+
+        $user->shouldReceive('belongsToMany')
+             ->andReturn($relationship)->once();
+
         $user->shouldReceive('detachRole')->twice();
 
         /*

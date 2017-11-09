@@ -8,7 +8,9 @@
  * @package Michalisantoniou6\Cerberus
  */
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Michalisantoniou6\Cerberus\Observers\UserObserver;
 
 class CerberusServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,13 @@ class CerberusServiceProvider extends ServiceProvider
         }
 
         $this->bladeDirectives();
+
+        $this->registerUserObserver();
+    }
+
+    private function registerUserObserver() {
+        $userModel = app(Config::get('cerberus.user'));
+        $userModel::observe(UserObserver::class);
     }
 
     /**
@@ -59,13 +68,13 @@ class CerberusServiceProvider extends ServiceProvider
             return "<?php endif; // Cerberus::hasRole ?>";
         });
 
-        // Call to Cerberus::can
+        // Call to Cerberus::hasPermission
         \Blade::directive('permission', function ($expression) {
-            return "<?php if (\\Cerberus::can({$expression})) : ?>";
+            return "<?php if (\\Cerberus::hasPermission({$expression})) : ?>";
         });
 
         \Blade::directive('endpermission', function ($expression) {
-            return "<?php endif; // Cerberus::can ?>";
+            return "<?php endif; // Cerberus::hasPermission ?>";
         });
 
         // Call to Cerberus::ability

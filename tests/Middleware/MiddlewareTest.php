@@ -13,7 +13,7 @@ abstract class MiddlewareTest extends PHPUnit_Framework_TestCase
 		     * Mimicks Laravel5's abort() helper function.
 		     *
 		     * Instead of calling \Illuminate\Foundation\Application::abort(), this function keeps track of 
-		     * the last abort called, so the abort can be retrieved for test assertions.
+		     * the last abort called, so the abort hasPermission be retrieved for test assertions.
 		     *
 		     * @see https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/helpers.php#L7-L23
 		     *
