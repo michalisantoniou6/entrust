@@ -397,6 +397,26 @@ Three directives are available for use within your Blade templates. What you giv
 @endability
 ```
 
+Similarly, you can assume Blade directives for multi-tenancy methods.
+
+```php
+@roleforsite('admin', 15)
+    <p>This is visible to users with the admin role for site with id 15. Gets translated to 
+    \Cerberus::roleForSite('admin', 15)</p>
+@endroleforsite
+
+@permissionforsite('manage-admins', 15)
+    <p>This is visible to users with the given permissions for site with id 15. Gets translated to 
+    \Cerberus::hasPermissionForSite('manage-admins', 15). The @can directive is already taken by core 
+    laravel authorization package, hence the @permission directive instead.</p>
+@endpermissionforsite
+
+@abilityforsite('admin,owner', 'create-post,edit-user', 15)
+    <p>This is visible to users with the given abilities for site with id 15. Gets translated to 
+    \Cerberus::abilityForSite('admin,owner', 'create-post,edit-user', 15)</p>
+@endabilityforsite
+``` 
+
 ### Middleware
 
 You can use a middleware to filter routes and route groups by permission or role
