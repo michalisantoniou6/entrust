@@ -73,8 +73,6 @@ Set the property values in the `config/cerberus.php`.
 These values will be used by cerberus to refer to the correct user/site/role/permission tables and models.
 
 To customize table names and model namespaces, edit the `config/cerberus.php`.
-#####You will need to provide a Site Model, as one is not included.
-You can just run `php artisan make:model Site`, edit CerberusMigration to include any additional fields you'd want on your Site model. 
 
 ### User relation to roles
 
@@ -138,31 +136,48 @@ In general, it may be helpful to think of the last two attributes in the form of
 
 #### User
 
-Next, use the `CerberusUserTrait` trait in your existing `User` model. For example:
+##### For a single tenancy site, use the `CerberusUserTrait` trait in your existing `User` model. For example:
 
 ```php
 <?php
 
 use Michalisantoniou6\Cerberus\Traits\CerberusUserTrait;
-use Michalisantoniou6\Cerberus\Traits\CerberusSiteUserTrait;
 
 class User extends Eloquent
 {
-    use CerberusUserTrait; // add this trait to your user model
-
-    use CerberusSiteUserTrait; //optionally, add this trait (in addition to the one above) for multi-tenant capabilities
+    use CerberusUserTrait; // add this trait for a single tenancy site
     
     //...
 }
 ```
 
-This will enable the relation with `Role` and add the following methods `roles()`, `hasRole($name)`, `can($permission)`, and `ability($roles, $permissions, $options)` within your `User` model.
+This will enable the relation with `Role` and add the following methods `roles()`, `hasRole($name)`, `hasPermission($permission)`, and `ability($roles, $permissions, $options)` within your `User` model.
 
-Don't forget to dump composer autoload
+
 
 ```bash
 composer dump-autoload
 ```
+
+##### If you'd like multi tenancy functionality, use `CerberusSiteUserTrait`. For example:
+
+```php
+<?php
+
+use Michalisantoniou6\Cerberus\Traits\CerberusSiteUserTrait;
+
+class User extends Eloquent
+{
+    use CerberusSiteUserTrait; //add this trait for a multi-tenant site
+    
+    //...
+}
+```
+
+This will enable the relation with `Role` and add the following methods `roles()`, `hasRoleForSite($name, $site)`, `hasPermissionForSite($permission, $site)`, and `abilityForSite($roles, $permissions, $site, $options)` in your `User` model. You will also have to `hasRole($name)` and `hasPermission($permission)` available, in case you'd like to target all users of a certain Role.
+
+
+Don't forget to dump composer autoload
 
 **And you are ready to go.**
 
