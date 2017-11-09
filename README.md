@@ -39,6 +39,12 @@ Alternatively, you can add just the following to your composer.json. Then run `c
 "michalisantoniou6/cerberus": "2.*"
 ```
 
+Require `dev-master` if you wish to always get the most recent stable version.
+
+```json
+"michalisantoniou6/cerberus": "dev-master"
+```
+
 2) Open your `config/app.php` and add the following to the `providers` array. You can skip this if you're on Laravel 5.5, as the package will register itsself.
 
 ```php
