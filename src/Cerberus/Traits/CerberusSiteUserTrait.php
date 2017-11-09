@@ -66,7 +66,7 @@ trait CerberusSiteUserTrait
      *
      * @return bool
      */
-    public function canForSite($permission, $site, $requireAll = false)
+    public function hasPermissionForSite($permission, $site, $requireAll = false)
     {
         if (is_a(del::class, $site)) {
             $site = $site->getKey();
@@ -167,17 +167,33 @@ trait CerberusSiteUserTrait
     }
 
     /**
+     * Checks whether $site is required and $site is empty.
+     *
+     * @param $site
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function validateSite($site)
+    {
+        if ( ! $site) {
+            throw new \Exception("The site is required.");
+        }
+
+        return true;
+    }
+
+    /**
      * Checks role(s) and permission(s).
      *
      * @param string|array $roles Array of roles or comma separated string
      * @param string|array $permissions Array of permissions or comma separated string.
-     * @param array $options validate_all (true|false) or return_type (boolean|array|both)
-     *
      * @param $site
+     * @param array $options validate_all (true|false) or return_type (boolean|array|both)
      *
      * @return array|bool
      */
-    public function abilityForSite($roles, $permissions, $options = [], $site)
+    public function abilityForSite($roles, $permissions, $site, $options = [])
     {
         $this->validateSite($site);
 
@@ -236,23 +252,6 @@ trait CerberusSiteUserTrait
             return [$validateAll, ['roles' => $checkedRoles, 'permissions' => $checkedPermissions]];
         }
 
-    }
-
-    /**
-     * Checks whether $site is required and $site is empty.
-     *
-     * @param $site
-     *
-     * @return bool
-     * @throws \Exception
-     */
-    public function validateSite($site)
-    {
-        if ( ! $site) {
-            throw new \Exception("The site is required.");
-        }
-
-        return true;
     }
 
     /**
