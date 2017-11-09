@@ -39,37 +39,25 @@ Alternatively, you can add just the following to your composer.json. Then run `c
 "michalisantoniou6/cerberus": "2.*"
 ```
 
-2) Open your `config/app.php` and add the following to the `providers` array:
+2) Open your `config/app.php` and add the following to the `providers` array. You can skip this if you're on Laravel 5.5, as the package will register itsself.
 
 ```php
 Michalisantoniou6\Cerberus\CerberusServiceProvider::class,
 ```
 
-3) In the same `config/app.php` and add the following to the `aliases ` array: 
+3) If you'd like to use the Facade, add the following to the `aliases` array in `config/app.php`: 
 
 ```php
 'Cerberus'   => Michalisantoniou6\Cerberus\CerberusFacade::class,
 ```
 
-4) Run the command below to publish the package config file `config/cerberus.php`:
+4) Run the command below to publish the package config file `config/cerberus.php`. Set the models and keys in your config file.
 
 ```shell
 php artisan vendor:publish
 ```
 
-5) Open your `config/auth.php` and add the following to it:
-
-```php
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => Namespace\Of\Your\User\Model\User::class,
-        'table' => 'users',
-    ],
-],
-```
-
-6)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also need to add the following:
+5)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also add the following:
 
 ```php
     'role' => \Michalisantoniou6\Cerberus\Middleware\CerberusRole::class,
@@ -81,10 +69,12 @@ to `routeMiddleware` array in `app/Http/Kernel.php`.
 
 ## Configuration
 
-Set the property values in the `config/auth.php`.
-These values will be used by cerberus to refer to the correct user table and model.
+Set the property values in the `config/cerberus.php`.
+These values will be used by cerberus to refer to the correct user/site/role/permission tables and models.
 
-To further customize table names and model namespaces, edit the `config/cerberus.php`.
+To customize table names and model namespaces, edit the `config/cerberus.php`.
+#####You will need to provide a Site Model, as one is not included.
+You can just run `php artisan make:model Site`, edit CerberusMigration to include any additional fields you'd want on your Site model. 
 
 ### User relation to roles
 
@@ -95,17 +85,12 @@ php artisan cerberus:migration
 ```
 
 It will generate the `<timestamp>_cerberus_setup_tables.php` migration.
-You may now run it with the artisan migrate command:
+You may add additional fields to the migration.
+Review the migration, and run it with the artisan migrate command:
 
 ```bash
 php artisan migrate
 ```
-
-After the migration, four new tables will be present:
-- `roles` &mdash; stores role records
-- `permissions` &mdash; stores permission records
-- `role_user` &mdash; stores [many-to-many](http://laravel.com/docs/4.2/eloquent#many-to-many) relations between roles and users
-- `permission_role` &mdash; stores [many-to-many](http://laravel.com/docs/4.2/eloquent#many-to-many) relations between roles and permissions
 
 ### Models
 
