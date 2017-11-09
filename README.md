@@ -39,37 +39,25 @@ Alternatively, you can add just the following to your composer.json. Then run `c
 "michalisantoniou6/cerberus": "2.*"
 ```
 
-2) Open your `config/app.php` and add the following to the `providers` array:
+2) Open your `config/app.php` and add the following to the `providers` array. You can skip this if you're on Laravel 5.5, as the package will register itsself.
 
 ```php
 Michalisantoniou6\Cerberus\CerberusServiceProvider::class,
 ```
 
-3) In the same `config/app.php` and add the following to the `aliases ` array: 
+3) If you'd like to use the Facade, add the following to the `aliases` array in `config/app.php`: 
 
 ```php
 'Cerberus'   => Michalisantoniou6\Cerberus\CerberusFacade::class,
 ```
 
-4) Run the command below to publish the package config file `config/cerberus.php`:
+4) Run the command below to publish the package config file `config/cerberus.php`. Set the models and keys in your config file.
 
 ```shell
 php artisan vendor:publish
 ```
 
-5) Open your `config/auth.php` and add the following to it:
-
-```php
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => Namespace\Of\Your\User\Model\User::class,
-        'table' => 'users',
-    ],
-],
-```
-
-6)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also need to add the following:
+5)  If you want to use [Middleware](#middleware) (requires Laravel 5.1 or later) you also add the following:
 
 ```php
     'role' => \Michalisantoniou6\Cerberus\Middleware\CerberusRole::class,
@@ -81,10 +69,10 @@ to `routeMiddleware` array in `app/Http/Kernel.php`.
 
 ## Configuration
 
-Set the property values in the `config/auth.php`.
-These values will be used by cerberus to refer to the correct user table and model.
+Set the property values in the `config/cerberus.php`.
+These values will be used by cerberus to refer to the correct user/site/role/permission tables and models.
 
-To further customize table names and model namespaces, edit the `config/cerberus.php`.
+To customize table names and model namespaces, edit the `config/cerberus.php`.
 
 ### User relation to roles
 
@@ -95,17 +83,12 @@ php artisan cerberus:migration
 ```
 
 It will generate the `<timestamp>_cerberus_setup_tables.php` migration.
-You may now run it with the artisan migrate command:
+You may add additional fields to the migration.
+Review the migration, and run it with the artisan migrate command:
 
 ```bash
 php artisan migrate
 ```
-
-After the migration, four new tables will be present:
-- `roles` &mdash; stores role records
-- `permissions` &mdash; stores permission records
-- `role_user` &mdash; stores [many-to-many](http://laravel.com/docs/4.2/eloquent#many-to-many) relations between roles and users
-- `permission_role` &mdash; stores [many-to-many](http://laravel.com/docs/4.2/eloquent#many-to-many) relations between roles and permissions
 
 ### Models
 
@@ -153,31 +136,48 @@ In general, it may be helpful to think of the last two attributes in the form of
 
 #### User
 
-Next, use the `CerberusUserTrait` trait in your existing `User` model. For example:
+##### For a single tenancy site, use the `CerberusUserTrait` trait in your existing `User` model. For example:
 
 ```php
 <?php
 
 use Michalisantoniou6\Cerberus\Traits\CerberusUserTrait;
-use Michalisantoniou6\Cerberus\Traits\CerberusSiteUserTrait;
 
 class User extends Eloquent
 {
-    use CerberusUserTrait; // add this trait to your user model
-
-    use CerberusSiteUserTrait; //optionally, add this trait (in addition to the one above) for multi-tenant capabilities
+    use CerberusUserTrait; // add this trait for a single tenancy site
     
     //...
 }
 ```
 
-This will enable the relation with `Role` and add the following methods `roles()`, `hasRole($name)`, `can($permission)`, and `ability($roles, $permissions, $options)` within your `User` model.
+This will enable the relation with `Role` and add the following methods `roles()`, `hasRole($name)`, `hasPermission($permission)`, and `ability($roles, $permissions, $options)` within your `User` model.
 
-Don't forget to dump composer autoload
+
 
 ```bash
 composer dump-autoload
 ```
+
+##### If you'd like multi tenancy functionality, use `CerberusSiteUserTrait`. For example:
+
+```php
+<?php
+
+use Michalisantoniou6\Cerberus\Traits\CerberusSiteUserTrait;
+
+class User extends Eloquent
+{
+    use CerberusSiteUserTrait; //add this trait for a multi-tenant site
+    
+    //...
+}
+```
+
+This will enable the relation with `Role` and add the following methods `roles()`, `hasRoleForSite($name, $site)`, `hasPermissionForSite($permission, $site)`, and `abilityForSite($roles, $permissions, $site, $options)` in your `User` model. You will also have to `hasRole($name)` and `hasPermission($permission)` available, in case you'd like to target all users of a certain Role.
+
+
+Don't forget to dump composer autoload
 
 **And you are ready to go.**
 
@@ -261,15 +261,15 @@ Now we can check for roles and permissions simply by doing:
 ```php
 $user->hasRole('owner');   // false
 $user->hasRole('admin');   // true
-$user->can('edit-user');   // false
-$user->can('create-post'); // true
+$user->hasPermission('edit-user');   // false
+$user->hasPermission('create-post'); // true
 ```
 
 Both `hasRole()` and `can()` can receive an array of roles & permissions to check:
 
 ```php
 $user->hasRole(['owner', 'admin']);       // true
-$user->can(['edit-user', 'create-post']); // true
+$user->hasPermission(['edit-user', 'create-post']); // true
 ```
 
 By default, if any of the roles or permissions are present for a user then the method will return true.
@@ -278,8 +278,8 @@ Passing `true` as a second parameter instructs the method to require **all** of 
 ```php
 $user->hasRole(['owner', 'admin']);             // true
 $user->hasRole(['owner', 'admin'], true);       // false, user does not have admin role
-$user->can(['edit-user', 'create-post']);       // true
-$user->can(['edit-user', 'create-post'], true); // false, user does not have edit-user permission
+$user->hasPermission(['edit-user', 'create-post']);       // true
+$user->hasPermission(['edit-user', 'create-post'], true); // false, user does not have edit-user permission
 ```
 
 You can have as many `Role`s as you want for each `User` and vice versa.
@@ -288,22 +288,22 @@ The `Cerberus` class has shortcuts to both `can()` and `hasRole()` for the curre
 
 ```php
 Cerberus::hasRole('role-name');
-Cerberus::can('permission-name');
+Cerberus::hasPermission('permission-name');
 
 // is identical to
 
 Auth::user()->hasRole('role-name');
-Auth::user()->can('permission-name');
+Auth::user()->hasPermission('permission-name');
 ```
 
 You can also use placeholders (wildcards) to check any matching permission by doing:
 
 ```php
 // match any admin permission
-$user->can("admin.*"); // true
+$user->hasPermission("admin.*"); // true
 
 // match any permission about users
-$user->can("*_users"); // true
+$user->hasPermission("*_users"); // true
 ```
 
 
@@ -387,7 +387,7 @@ Three directives are available for use within your Blade templates. What you giv
 
 @permission('manage-admins')
     <p>This is visible to users with the given permissions. Gets translated to 
-    \Cerberus::can('manage-admins'). The @can directive is already taken by core 
+    \Cerberus::hasPermission('manage-admins'). The @can directive is already taken by core 
     laravel authorization package, hence the @permission directive instead.</p>
 @endpermission
 
@@ -421,89 +421,6 @@ For more complex situations use `ability` middleware which accepts 3 parameters:
 ```php
 'middleware' => ['ability:admin|owner,create-post|edit-user,true']
 ```
-
-### Short syntax route filter
-
-To filter a route by permission or role you can call the following in your `app/Http/routes.php`:
-
-```php
-// only users with roles that have the 'manage_posts' permission will be able to access any route within admin/post
-Cerberus::routeNeedsPermission('admin/post*', 'create-post');
-
-// only owners will have access to routes within admin/advanced
-Cerberus::routeNeedsRole('admin/advanced*', 'owner');
-
-// optionally the second parameter can be an array of permissions or roles
-// user would need to match all roles or permissions for that route
-Cerberus::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'));
-Cerberus::routeNeedsRole('admin/advanced*', array('owner','writer'));
-```
-
-Both of these methods accept a third parameter.
-If the third parameter is null then the return of a prohibited access will be `App::abort(403)`, otherwise the third parameter will be returned.
-So you can use it like:
-
-```php
-Cerberus::routeNeedsRole('admin/advanced*', 'owner', Redirect::to('/home'));
-```
-
-Furthermore both of these methods accept a fourth parameter.
-It defaults to true and checks all roles/permissions given.
-If you set it to false, the function will only fail if all roles/permissions fail for that user.
-Useful for admin applications where you want to allow access for multiple groups.
-
-```php
-// if a user has 'create-post', 'edit-comment', or both they will have access
-Cerberus::routeNeedsPermission('admin/post*', array('create-post', 'edit-comment'), null, false);
-
-// if a user is a member of 'owner', 'writer', or both they will have access
-Cerberus::routeNeedsRole('admin/advanced*', array('owner','writer'), null, false);
-
-// if a user is a member of 'owner', 'writer', or both, or user has 'create-post', 'edit-comment' they will have access
-// if the 4th parameter is true then the user must be a member of Role and must have Permission
-Cerberus::routeNeedsRoleOrPermission(
-    'admin/advanced*',
-    array('owner', 'writer'),
-    array('create-post', 'edit-comment'),
-    null,
-    false
-);
-```
-
-### Route filter
-
-Cerberus roles/permissions can be used in filters by simply using the `can` and `hasRole` methods from within the Facade:
-
-```php
-Route::filter('manage_posts', function()
-{
-    // check the current user
-    if (!Cerberus::can('create-post')) {
-        return Redirect::to('admin');
-    }
-});
-
-// only users with roles that have the 'manage_posts' permission will be able to access any admin/post route
-Route::when('admin/post*', 'manage_posts');
-```
-
-Using a filter to check for a role:
-
-```php
-Route::filter('owner_role', function()
-{
-    // check the current user
-    if (!Cerberus::hasRole('Owner')) {
-        App::abort(403);
-    }
-});
-
-// only owners will have access to routes within admin/advanced
-Route::when('admin/advanced*', 'owner_role');
-```
-
-As you can see `Cerberus::hasRole()` and `Cerberus::can()` checks if the user is logged in, and then if he or she has the role or permission.
-If the user is not logged the return will also be `false`.
 
 ## Troubleshooting
 

@@ -66,7 +66,7 @@ trait CerberusRoleTrait
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('auth.providers.users.model'), Config::get('cerberus.role_user_site_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.user_foreign_key'));
+        return $this->belongsToMany(Config::get('cerberus.user'), Config::get('cerberus.role_user_site_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.user_foreign_key'));
     }
 
     /**
