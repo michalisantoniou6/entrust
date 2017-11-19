@@ -3,9 +3,12 @@
 use Michalisantoniou6\Cerberus\Cerberus;
 use Illuminate\Support\Facades\Facade;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class CerberusTest extends PHPUnit_Framework_TestCase
+class CerberusTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     protected $nullFilterTest;
     protected $abortFilterTest;
     protected $customResponseFilterTest;
@@ -52,11 +55,6 @@ class CerberusTest extends PHPUnit_Framework_TestCase
 
             return true;
         };
-    }
-
-    public function tearDown()
-    {
-        m::close();
     }
 
     public function testHasRole()
