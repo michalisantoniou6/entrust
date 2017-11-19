@@ -1,9 +1,12 @@
 <?php
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-abstract class MiddlewareTest extends PHPUnit_Framework_TestCase
+abstract class MiddlewareTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
 	public static $abortCode = null;
 
 	public static function setupBeforeClass()
@@ -32,8 +35,6 @@ abstract class MiddlewareTest extends PHPUnit_Framework_TestCase
 	public function tearDown()
 	{
 		parent::tearDown();
-
-        m::close();
 
 		// Reset the abort code every end of test case, 
 		// so the result of previous test case does not pollute the next one.
