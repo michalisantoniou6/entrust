@@ -68,7 +68,7 @@ trait CerberusSiteUserTrait
      */
     public function hasPermissionForSite($permission, $site, $requireAll = false)
     {
-        if (is_a(del::class, $site)) {
+        if (is_a(Model::class, $site)) {
             $site = $site->getKey();
         }
 
