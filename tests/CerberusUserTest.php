@@ -1,17 +1,18 @@
 <?php
 
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Michalisantoniou6\Cerberus\Contracts\CerberusUserInterface;
 use Michalisantoniou6\Cerberus\Traits\CerberusUserTrait;
-use Illuminate\Cache\ArrayStore;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Cache;
-use Michalisantoniou6\Cerberus\Permission;
-use Michalisantoniou6\Cerberus\Role;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class CerberusUserTest extends PHPUnit_Framework_TestCase
+class CerberusUserTest extends TestCase
 {
-    private $facadeMocks = array();
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
+    private $facadeMocks = [];
 
     public function setUp()
     {
@@ -20,18 +21,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $app = m::mock('app')->shouldReceive('instance')->getMock();
 
         $this->facadeMocks['config'] = m::mock('config');
-        $this->facadeMocks['cache'] = m::mock('cache');
+        $this->facadeMocks['cache']  = m::mock('cache');
 
         Config::setFacadeApplication($app);
         Config::swap($this->facadeMocks['config']);
 
         Cache::setFacadeApplication($app);
         Cache::swap($this->facadeMocks['cache']);
-    }
-
-    public function tearDown()
-    {
-        m::close();
     }
 
     public function testRoles()
@@ -42,7 +38,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $belongsToMany = new stdClass();
-        $user = m::mock('HasRoleUser')->makePartial();
+        $user          = m::mock('HasRoleUser')->makePartial();
 
         /*
         |------------------------------------------------------------
@@ -81,7 +77,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -109,6 +105,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($user->hasRole(['RoleC', 'RoleD']));
     }
 
+    protected function mockRole($roleName)
+    {
+        $roleMock              = m::mock('Michalisantoniou6\Cerberus\Role');
+        $roleMock->name        = $roleName;
+        $roleMock->perms       = [];
+        $roleMock->permissions = [];
+        $roleMock->id          = 1;
+
+        return $roleMock;
+    }
+
     public function testCan()
     {
         /*
@@ -126,7 +133,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -157,8 +164,17 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($user->hasPermission(['manage_d', 'manage_e']));
     }
 
+    protected function mockPermission($permName)
+    {
+        $permMock               = m::mock('Michalisantoniou6\Cerberus\Permission');
+        $permMock->name         = $permName;
+        $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
+        $permMock->id           = 1;
 
-    public function testCanWithPlaceholderSupport ()
+        return $permMock;
+    }
+
+    public function testCanWithPlaceholderSupport()
     {
         /*
         |------------------------------------------------------------
@@ -173,7 +189,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
 
         $role->perms = [$permA, $permB, $permC];
 
-        $user = new HasRoleUser();
+        $user        = new HasRoleUser();
         $user->roles = [$role];
 
         /*
@@ -201,7 +217,6 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($user->hasPermission(['site.*']));
     }
 
-
     public function testAbilityShouldReturnBoolean()
     {
         /*
@@ -209,13 +224,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -229,9 +244,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -332,13 +347,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -352,9 +367,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
 
@@ -392,7 +407,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                'permissions' => [$userPermNameA => true, $userPermNameB => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -403,7 +418,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                'permissions' => [$userPermNameA => true, $userPermNameB => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -417,7 +432,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -428,7 +443,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
+                'permissions' => [$userPermNameA => true, $userPermNameB => true],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -441,8 +456,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         // Case: User lacks a permission.
         $this->assertSame(
             [
-                'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
+                'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -452,8 +467,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         );
         $this->assertSame(
             [
-                'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
+                'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -467,7 +482,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
+                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -478,7 +493,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
+                'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -495,13 +510,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -515,9 +530,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -556,8 +571,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 true,
                 [
                     'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA => true, $userPermNameB => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -570,8 +585,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 true,
                 [
                     'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA => true, $userPermNameB => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -587,8 +602,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 true,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -601,8 +616,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $userRoleNameB => true],
-                    'permissions' => [$userPermNameA    => true, $userPermNameB  => true]
-                ]
+                    'permissions' => [$userPermNameA => true, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $userRoleNameB],
@@ -617,9 +632,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
             [
                 true,
                 [
-                    'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
-                ]
+                    'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -631,9 +646,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
             [
                 false,
                 [
-                    'roles'       => [$userRoleNameA    => true, $userRoleNameB  => true],
-                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true]
-                ]
+                    'roles'       => [$userRoleNameA => true, $userRoleNameB => true],
+                    'permissions' => [$nonUserPermNameA => false, $userPermNameB => true],
+                ],
             ],
             $user->ability(
                 [$userRoleNameA, $userRoleNameB],
@@ -649,8 +664,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
-                ]
+                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -663,8 +678,8 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
                 false,
                 [
                     'roles'       => [$nonUserRoleNameA => false, $nonUserRoleNameB => false],
-                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false]
-                ]
+                    'permissions' => [$nonUserPermNameA => false, $nonUserPermNameB => false],
+                ],
             ],
             $user->ability(
                 [$nonUserRoleNameA, $nonUserRoleNameB],
@@ -691,9 +706,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -747,13 +762,13 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA = 'user_can_a';
-        $userPermNameB = 'user_can_b';
-        $userPermNameC = 'user_can_c';
+        $userPermNameA    = 'user_can_a';
+        $userPermNameB    = 'user_can_b';
+        $userPermNameC    = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA = 'UserRoleA';
-        $userRoleNameB = 'UserRoleB';
+        $userRoleNameA    = 'UserRoleA';
+        $userRoleNameB    = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -767,9 +782,9 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA, $roleB];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA, $roleB];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -867,12 +882,12 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         */
         $permA = $this->mockPermission('manage_a');
 
-        $roleA = $this->mockRole('RoleA');
+        $roleA        = $this->mockRole('RoleA');
         $roleA->perms = [$permA];
 
-        $user = m::mock('HasRoleUser')->makePartial();
-        $user->roles = [$roleA];
-        $user->id = 4;
+        $user             = m::mock('HasRoleUser')->makePartial();
+        $user->roles      = [$roleA];
+        $user->id         = 4;
         $user->primaryKey = 'id';
 
         function isExceptionThrown(
@@ -921,7 +936,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $roleObject = m::mock('Role');
-        $roleArray = ['id' => 2];
+        $roleArray  = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
 
@@ -963,7 +978,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $roleObject = m::mock('Role');
-        $roleArray = ['id' => 2];
+        $roleArray  = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
 
@@ -1072,7 +1087,7 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user = m::mock('HasRoleUser')->makePartial();
+        $user        = m::mock('HasRoleUser')->makePartial();
         $user->roles = [$roleA, $roleB];
 
         $relationship = m::mock('BelongsToMany');
@@ -1103,27 +1118,6 @@ class CerberusUserTest extends PHPUnit_Framework_TestCase
         $user->detachRoles();
 
     }
-
-    protected function mockPermission($permName)
-    {
-        $permMock = m::mock('Michalisantoniou6\Cerberus\Permission');
-        $permMock->name = $permName;
-        $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
-        $permMock->id = 1;
-
-        return $permMock;
-    }
-
-    protected function mockRole($roleName)
-    {
-        $roleMock = m::mock('Michalisantoniou6\Cerberus\Role');
-        $roleMock->name = $roleName;
-        $roleMock->perms = [];
-        $roleMock->permissions = [];
-        $roleMock->id = 1;
-
-        return $roleMock;
-    }
 }
 
 class HasRoleUser implements CerberusUserInterface
@@ -1134,9 +1128,10 @@ class HasRoleUser implements CerberusUserInterface
     public $primaryKey;
     public $id;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->primaryKey = 'id';
-        $this->id = 4;
+        $this->id         = 4;
     }
 
     public function belongsToMany($role, $assignedRolesTable)
