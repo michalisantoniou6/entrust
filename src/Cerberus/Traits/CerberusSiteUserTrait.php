@@ -381,6 +381,7 @@ trait CerberusSiteUserTrait
         return DB::table(Config::get('cerberus.role_user_site_table'))->where([
             [Config::get('cerberus.role_foreign_key'), '=', $role],
             [Config::get('cerberus.site_foreign_key'), '=', $site],
+            [Config::get('cerberus.user_foreign_key'), '=', $site],
         ])->delete();
     }
 }
