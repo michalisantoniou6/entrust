@@ -321,7 +321,10 @@ trait CerberusSiteUserTrait
         }
 
         if (is_array($role)) {
-            $role = $role['id'];
+            foreach ($role as $key => $roleId) {
+                $this->attachRoleForSite($roleId, $site);
+                unset($role[$key]);
+            }
         }
 
         if ( ! is_numeric($role)) {
@@ -369,7 +372,10 @@ trait CerberusSiteUserTrait
         }
 
         if (is_array($role)) {
-            $role = $role['id'];
+            foreach ($role as $key => $roleId) {
+                $this->detachRoleForSite($roleId, $site);
+                unset($role[$key]);
+            }
         }
 
         return DB::table(Config::get('cerberus.role_user_site_table'))->where([
