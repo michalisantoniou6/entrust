@@ -267,7 +267,7 @@ trait CerberusSiteUserTrait
     {
         if (is_array($name)) {
             foreach ($name as $roleName) {
-                $hasRole = $this->hasRoleForSite($roleName, false, $site);
+                $hasRole = $this->hasRoleForSite($roleName, $site, $site);
 
                 if ($hasRole && ! $requireAll) {
                     return true;
