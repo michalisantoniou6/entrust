@@ -77,7 +77,7 @@ trait CerberusRoleTrait
      */
     public function perms()
     {
-        return $this->belongsToMany(Config::get('cerberus.permission'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.permission_foreign_key'));
+        return $this->belongsToMany(Config::get('cerberus.permission'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.permission_foreign_key'))->withTimestamps();
     }
 
     /**

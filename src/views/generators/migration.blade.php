@@ -64,6 +64,8 @@ class CerberusSetupTables extends Migration
             $table->integer('permission_id')->unsigned();
             $table->integer('role_id')->unsigned();
 
+            $table->timestamps();
+
             $table->foreign('permission_id')->references('id')->on('{{ $permissionsTable }}')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('role_id')->references('id')->on('{{ $rolesTable }}')
