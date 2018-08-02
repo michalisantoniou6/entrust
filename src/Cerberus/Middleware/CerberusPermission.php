@@ -35,7 +35,7 @@ class CerberusPermission
 	 * @param  $permissions
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next, $permissions)
+	public function handle($request, Closure $next, ...$permissions)
 	{
 		if (!is_array($permissions)) {
 			$permissions = explode(self::DELIMITER, $permissions);
