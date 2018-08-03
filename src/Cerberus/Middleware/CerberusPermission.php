@@ -13,8 +13,6 @@ use Illuminate\Contracts\Auth\Guard;
 
 class CerberusPermission
 {
-	const DELIMITER = '|';
-
 	protected $auth;
 
 	/**
@@ -37,10 +35,6 @@ class CerberusPermission
 	 */
 	public function handle($request, Closure $next, ...$permissions)
 	{
-		if (!is_array($permissions)) {
-			$permissions = explode(self::DELIMITER, $permissions);
-		}
-
 		if ($this->auth->guest() || !$request->user()->hasPermission($permissions)) {
 			abort(403);
 		}

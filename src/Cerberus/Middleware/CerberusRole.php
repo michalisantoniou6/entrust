@@ -13,9 +13,7 @@ use Illuminate\Contracts\Auth\Guard;
 
 class CerberusRole
 {
-	const DELIMITER = '|';
-
-	protected $auth;
+    protected $auth;
 
 	/**
 	 * Creates a new instance of the middleware.
@@ -33,17 +31,12 @@ class CerberusRole
      * @param  \Illuminate\Http\Request $request
      * @param  Closure $next
      * @param  $roles
-     * @param  $site
      *
      * @return mixed
      */
 	public function handle($request, Closure $next, ...$roles)
 	{
-		if (!is_array($roles)) {
-			$roles = explode(self::DELIMITER, $roles);
-		}
-
-		if ($this->auth->guest() || !$request->user()->hasRole($roles, false)) {
+	    if ($this->auth->guest() || !$request->user()->hasRole($roles, false)) {
 			abort(403);
 		}
 
