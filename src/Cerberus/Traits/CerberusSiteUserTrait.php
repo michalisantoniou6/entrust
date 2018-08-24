@@ -10,12 +10,12 @@
 
 namespace Michalisantoniou6\Cerberus\Traits;
 
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use Illuminate\Cache\TaggableStore;
-use Illuminate\Support\Facades\Cache;
 
 trait CerberusSiteUserTrait
 {
@@ -45,6 +45,13 @@ trait CerberusSiteUserTrait
             // Return the value of $requireAll;
             return $requireAll;
         } else {
+            foreach ($this->cachedPermissions() as $perm) {
+                //first check if the User has this permission directly related and active
+                //if it's not active it means it has been removed from the default permissions of a role for this User.
+                if (str_is($permission, $perm->name)) {
+                    return $perm->pivot->is_active ? true : false;
+                }
+            }
             foreach ($this->cachedRoles() as $role) {
                 // Validate against the Permission table
                 foreach ($role->cachedPermissions() as $perm) {
@@ -92,6 +99,13 @@ trait CerberusSiteUserTrait
                 if ($role->pivot->{Config::get('cerberus.site_foreign_key')} != $site) {
                     continue;
                 }
+                foreach ($this->cachedPermissions() as $perm) {
+                    //first check if the User has this permission directly related and active
+                    //if it's not active it means it has been removed from the default permissions of a role for this User.
+                    if (str_is($permission, $perm->name)) {
+                        return $perm->pivot->is_active ? true : false;
+                    }
+                }
                 // Validate against the Permission table
                 foreach ($role->cachedPermissions() as $perm) {
                     if (str_is($permission, $perm->name)) {
@@ -115,6 +129,19 @@ trait CerberusSiteUserTrait
                 });
         } else {
             return $this->roles()->get();
+        }
+    }
+
+    public function cachedPermissions()
+    {
+        $cacheKey       = 'cerberus_permissions_for_user_' . $this->id;
+        if (Cache::getStore() instanceof TaggableStore) {
+            return Cache::tags(Config::get('cerberus.permissibles_table'))->remember($cacheKey,
+                Config::get('cache.ttl', 60), function () {
+                    return $this->perms()->get();
+                });
+        } else {
+            return $this->perms()->get();
         }
     }
 
@@ -164,6 +191,16 @@ trait CerberusSiteUserTrait
         return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.role_user_site_table'),
             Config::get('cerberus.user_foreign_key'), Config::get('cerberus.role_foreign_key'))
                     ->withPivot(Config::get('cerberus.site_foreign_key'));
+    }
+
+
+    public function perms()
+    {
+        return $this->morphToMany(Config::get('cerberus.permission'), 'permissible',
+            Config::get('cerberus.permissibles_table'), 'permissible_id',
+            Config::get('cerberus.permission_foreign_key'))
+                    ->withPivot(['is_active'])
+                    ->withTimestamps();
     }
 
     /**
@@ -334,6 +371,105 @@ trait CerberusSiteUserTrait
         $this->roles()->attach($role, [
             Config::get('cerberus.site_foreign_key') => $site,
         ]);
+    }
+
+    /**
+     * Attach permission to current user.
+     *
+     * @param object|array $permission
+     *
+     * @return void
+     */
+    public function attachPermission($permission, $isActive = 1)
+    {
+        if (is_object($permission)) {
+            $permission = $permission->getKey();
+        }
+
+        if (is_array($permission)) {
+            return $this->attachPermissions($permission);
+        }
+
+        if ($this->perms()->find($permission)){
+            $this->perms()->updateExistingPivot($permission, ['is_active' => $isActive]);
+        }else{
+            $this->perms()->attach($permission, ['is_active' => $isActive]);
+        }
+
+        if (Cache::getStore() instanceof TaggableStore) {
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
+        }
+
+
+    }
+
+    /**
+     * Detach permission from current user.
+     *
+     * @param object|array $permission
+     *
+     * @return void
+     */
+    public function detachPermission($permission)
+    {
+        if (is_object($permission)) {
+            $permission = $permission->getKey();
+        }
+
+        if (is_array($permission)) {
+            return $this->detachPermissions($permission);
+        }
+
+        if ($this->perms()->find($permission)) {
+            $this->perms()->updateExistingPivot($permission, ['is_active' => 0]);
+            if (Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
+            }
+        }else{
+            foreach ($this->cachedRoles() as $role) {
+                // Validate against the Permission table
+                foreach ($role->cachedPermissions() as $perm) {
+                    if ($perm->id == $permission) {
+                        $this->perms()->attach($permission, ['is_active' => 0]);
+                        if (Cache::getStore() instanceof TaggableStore) {
+                            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Attach multiple permissions to current user.
+     *
+     * @param mixed $permissions
+     *
+     * @return void
+     */
+    public function attachPermissions($permissions)
+    {
+        foreach ($permissions as $permission) {
+            $this->attachPermission($permission);
+        }
+    }
+
+    /**
+     * Detach multiple permissions from current user
+     *
+     * @param mixed $permissions
+     *
+     * @return void
+     */
+    public function detachPermissions($permissions = null)
+    {
+        if ( ! $permissions) {
+            $permissions = $this->perms()->get();
+        }
+
+        foreach ($permissions as $permission) {
+            $this->detachPermission($permission);
+        }
     }
 
     /**
