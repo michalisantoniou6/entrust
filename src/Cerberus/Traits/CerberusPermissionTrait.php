@@ -12,14 +12,20 @@ use Illuminate\Support\Facades\Config;
 
 trait CerberusPermissionTrait
 {
-    /**
-     * Many-to-Many relations with role model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
+
     public function roles()
     {
-        return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.permission_foreign_key'), Config::get('cerberus.role_foreign_key'))->withTimestamps();
+        return $this->morphedByMany(Config::get('cerberus.role'),'permissible', Config::get('cerberus.permissibles_table'), Config::get('cerberus.permission_foreign_key'), 'permissible_id')
+                    ->withPivot(['is_active'])
+                    ->withTimestamps();
+    }
+
+
+    public function users()
+    {
+        return $this->morphedByMany('App\User','permissible', Config::get('cerberus.permissibles_table'))
+                    ->withPivot(['is_active'])
+                    ->withTimestamps();
     }
 
     /**
