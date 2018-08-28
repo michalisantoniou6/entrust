@@ -110,14 +110,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cerberus permission_role Table
+    | Cerberus permission_role_user Table
     |--------------------------------------------------------------------------
     |
     | This is the permission_role table used by Cerberus to save relationship
-    | between permissions and roles to the database.
+    | between permissions and roles/users to the database.
     |
     */
-    'permission_role_table'  => 'permission_role',
+    'permissibles_table'  => 'permissibles',
 
     /*
     |--------------------------------------------------------------------------

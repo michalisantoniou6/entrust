@@ -32,7 +32,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -43,7 +43,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -54,7 +54,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -148,7 +148,7 @@ trait CerberusRoleTrait
         }
 
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
     }
 
