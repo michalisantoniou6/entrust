@@ -21,6 +21,13 @@ trait CerberusPermissionTrait
     {
         return $this->belongsToMany(Config::get('cerberus.role'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.permission_foreign_key'), Config::get('cerberus.role_foreign_key'))->withTimestamps();
     }
+    
+    public function users()
+    {
+        return $this->morphedByMany(Config::get('cerberus.user'),'permissible', Config::get('cerberus.permissibles_table'))
+                    ->withPivot(['is_active'])
+                    ->withTimestamps();
+    }
 
     /**
      * Boot the permission model
