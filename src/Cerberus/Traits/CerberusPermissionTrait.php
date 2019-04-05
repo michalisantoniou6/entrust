@@ -19,14 +19,6 @@ trait CerberusPermissionTrait
                     ->withPivot(['is_active'])
                     ->withTimestamps();
     }
-
-
-    public function users()
-    {
-        return $this->morphedByMany('App\User','permissible', Config::get('cerberus.permissibles_table'))
-                    ->withPivot(['is_active'])
-                    ->withTimestamps();
-    }
     
     public function users()
     {
