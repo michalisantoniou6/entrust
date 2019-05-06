@@ -20,7 +20,7 @@ trait CerberusRoleTrait
         $rolePrimaryKey = $this->primaryKey;
         $cacheKey = 'cerberus_permissions_for_role_' . $this->$rolePrimaryKey;
         if (Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('cerberus.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl', 60), function () {
+            return Cache::tags(Config::get('cerberus.permissibles_table'))->remember($cacheKey, Config::get('cache.ttl', 60), function () {
                 return $this->perms()->get();
             });
         } else return $this->perms()->get();
@@ -32,7 +32,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -43,7 +43,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -54,7 +54,7 @@ trait CerberusRoleTrait
             return false;
         }
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
         return true;
     }
@@ -69,17 +69,11 @@ trait CerberusRoleTrait
         return $this->belongsToMany(Config::get('cerberus.user'), Config::get('cerberus.role_user_site_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.user_foreign_key'));
     }
 
-    /**
-     * Many-to-Many relations with the permission model.
-     * Named "perms" for backwards compatibility. Also because "perms" is short and sweet.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function perms()
-    {
-        return $this->belongsToMany(Config::get('cerberus.permission'), Config::get('cerberus.permission_role_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.permission_foreign_key'))->withTimestamps();
+    public function perms(){
+        return $this->morphToMany(Config::get('cerberus.permission'), 'permissible', Config::get('cerberus.permissibles_table'), 'permissible_id', Config::get('cerberus.permission_foreign_key'))
+                    ->withPivot(['is_active'])
+                    ->withTimestamps();
     }
-
     /**
      * Boot the role model
      * Attach event listener to remove the many-to-many records when trying to delete
@@ -111,6 +105,7 @@ trait CerberusRoleTrait
      */
     public function hasPermission($name, $requireAll = false)
     {
+
         if (is_array($name)) {
             foreach ($name as $permissionName) {
                 $hasPermission = $this->hasPermission($permissionName);
@@ -153,7 +148,7 @@ trait CerberusRoleTrait
         }
 
         if (Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('cerberus.permission_role_table'))->flush();
+            Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
     }
 

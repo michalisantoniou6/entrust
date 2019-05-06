@@ -39,7 +39,7 @@ class MigrationCommand extends Command
         $rolesTable          = Config::get('cerberus.roles_table');
         $roleUserTable       = Config::get('cerberus.role_user_site_table');
         $permissionsTable    = Config::get('cerberus.permissions_table');
-        $permissionRoleTable = Config::get('cerberus.permission_role_table');
+        $permissiblesTable = Config::get('cerberus.permissibles_table');
         $sitesTable          = Config::get('cerberus.sites_table');
 
         $userFK = Config::get('cerberus.user_foreign_key');
@@ -47,9 +47,9 @@ class MigrationCommand extends Command
         $siteFK = Config::get('cerberus.site_foreign_key');
 
         $this->line('');
-        $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable, $sitesTable");
+        $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissiblesTable, $sitesTable");
 
-        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissionRoleTable', '$sitesTable'" .
+        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissiblesTable', '$sitesTable'" .
                    " tables will be created in database/migrations directory";
 
         $this->comment($message);
@@ -60,7 +60,7 @@ class MigrationCommand extends Command
             $this->line('');
 
             $this->info("Creating migration...");
-            if ($this->createMigration($rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable,
+            if ($this->createMigration($rolesTable, $roleUserTable, $permissionsTable, $permissiblesTable,
                 $sitesTable, $userFK, $roleFK, $siteFK)) {
 
                 $this->info("Migration successfully created!");
@@ -87,7 +87,7 @@ class MigrationCommand extends Command
         $rolesTable,
         $roleUserTable,
         $permissionsTable,
-        $permissionRoleTable,
+        $permissiblesTable,
         $sitesTable,
         $userFK,
         $roleFK,
@@ -102,7 +102,7 @@ class MigrationCommand extends Command
         $userKeyName   = $userModel->getKeyName();
 
 
-        $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable',
+        $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissiblesTable', 'usersTable',
             'userKeyName', 'sitesTable', 'userFK', 'roleFK', 'siteFK');
 
         $output = $this->getLaravel()->view->make('cerberus::generators.migration')->with($data)->render();
