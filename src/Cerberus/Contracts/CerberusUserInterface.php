@@ -1,13 +1,13 @@
-<?php namespace Michalisantoniou6\Cerberus\Contracts;
+<?php
+
+namespace Michalisantoniou6\Cerberus\Contracts;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
-
 interface CerberusUserInterface
 {
     /**
@@ -65,14 +65,14 @@ interface CerberusUserInterface
     public function detachRole($role);
 
     /**
-     * Attach multiple roles to a user
+     * Attach multiple roles to a user.
      *
      * @param mixed $roles
      */
     public function attachRoles($roles);
 
     /**
-     * Detach multiple roles from a user
+     * Detach multiple roles from a user.
      *
      * @param mixed $roles
      */

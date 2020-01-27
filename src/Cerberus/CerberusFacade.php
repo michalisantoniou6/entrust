@@ -1,11 +1,12 @@
-<?php namespace Michalisantoniou6\Cerberus;
+<?php
+
+namespace Michalisantoniou6\Cerberus;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Support\Facades\Facade;

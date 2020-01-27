@@ -1,13 +1,13 @@
-<?php namespace Michalisantoniou6\Cerberus\Contracts;
+<?php
+
+namespace Michalisantoniou6\Cerberus\Contracts;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
-
 interface CerberusRoleInterface
 {
     /**
@@ -34,7 +34,7 @@ interface CerberusRoleInterface
      */
     public function savePermissions($inputPermissions);
 
-     /**
+    /**
      * Attach permission to current role.
      *
      * @param object|array $permission
@@ -62,7 +62,7 @@ interface CerberusRoleInterface
     public function attachPermissions($permissions);
 
     /**
-     * Detach multiple permissions from current role
+     * Detach multiple permissions from current role.
      *
      * @param mixed $permissions
      *

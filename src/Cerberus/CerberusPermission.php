@@ -1,17 +1,18 @@
-<?php namespace Michalisantoniou6\Cerberus;
+<?php
+
+namespace Michalisantoniou6\Cerberus;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
-use Michalisantoniou6\Cerberus\Contracts\CerberusPermissionInterface;
-use Michalisantoniou6\Cerberus\Traits\CerberusPermissionTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+use Michalisantoniou6\Cerberus\Contracts\CerberusPermissionInterface;
+use Michalisantoniou6\Cerberus\Traits\CerberusPermissionTrait;
 
 class CerberusPermission extends Model implements CerberusPermissionInterface
 {
@@ -34,5 +35,4 @@ class CerberusPermission extends Model implements CerberusPermissionInterface
         parent::__construct($attributes);
         $this->table = Config::get('cerberus.permissions_table');
     }
-
 }

@@ -5,7 +5,6 @@
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 namespace Michalisantoniou6\Cerberus\Traits;
@@ -23,7 +22,7 @@ trait CerberusSiteUserTrait
      * Check if user has a permission by its name.
      *
      * @param string|array $permission Permission string or array of permissions.
-     * @param bool $requireAll All permissions in the array are required.
+     * @param bool         $requireAll All permissions in the array are required.
      *
      * @return bool
      */
@@ -33,9 +32,9 @@ trait CerberusSiteUserTrait
             foreach ($permission as $permName) {
                 $hasPerm = $this->hasPermission($permName);
 
-                if ($hasPerm && ! $requireAll) {
+                if ($hasPerm && !$requireAll) {
                     return true;
-                } elseif ( ! $hasPerm && $requireAll) {
+                } elseif (!$hasPerm && $requireAll) {
                     return false;
                 }
             }
@@ -69,7 +68,7 @@ trait CerberusSiteUserTrait
      * Check if user has a permission by its name.
      *
      * @param string|array $permission Permission string or array of permissions.
-     * @param bool $requireAll All permissions in the array are required.
+     * @param bool         $requireAll All permissions in the array are required.
      *
      * @return bool
      */
@@ -83,9 +82,9 @@ trait CerberusSiteUserTrait
             foreach ($permission as $permName) {
                 $hasPerm = $this->can($permName);
 
-                if ($hasPerm && ! $requireAll) {
+                if ($hasPerm && !$requireAll) {
                     return true;
-                } elseif ( ! $hasPerm && $requireAll) {
+                } elseif (!$hasPerm && $requireAll) {
                     return false;
                 }
             }
@@ -121,7 +120,7 @@ trait CerberusSiteUserTrait
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
-        $cacheKey       = 'cerberus_roles_for_user_' . $this->$userPrimaryKey;
+        $cacheKey = 'cerberus_roles_for_user_'.$this->$userPrimaryKey;
         if (Cache::getStore() instanceof TaggableStore) {
             return Cache::tags(Config::get('cerberus.role_user_site_table'))->remember($cacheKey,
                 Config::get('cache.ttl'), function () {
@@ -134,7 +133,7 @@ trait CerberusSiteUserTrait
 
     public function cachedPermissions()
     {
-        $cacheKey       = 'cerberus_permissions_for_user_' . $this->id;
+        $cacheKey = 'cerberus_permissions_for_user_'.$this->id;
         if (Cache::getStore() instanceof TaggableStore) {
             return Cache::tags(Config::get('cerberus.permissibles_table'))->remember($cacheKey,
                 Config::get('cache.ttl', 60), function () {
@@ -148,8 +147,8 @@ trait CerberusSiteUserTrait
     /**
      * Checks if the user has a role by its name.
      *
-     * @param string|array $name Role name or array of role names.
-     * @param bool $requireAll All roles in the array are required.
+     * @param string|array $name       Role name or array of role names.
+     * @param bool         $requireAll All roles in the array are required.
      *
      * @return bool
      */
@@ -159,9 +158,9 @@ trait CerberusSiteUserTrait
             foreach ($name as $roleName) {
                 $hasRole = $this->hasRole($roleName, false);
 
-                if ($hasRole && ! $requireAll) {
+                if ($hasRole && !$requireAll) {
                     return true;
-                } elseif ( ! $hasRole && $requireAll) {
+                } elseif (!$hasRole && $requireAll) {
                     return false;
                 }
             }
@@ -193,7 +192,6 @@ trait CerberusSiteUserTrait
                     ->withPivot(Config::get('cerberus.site_foreign_key'));
     }
 
-
     public function perms()
     {
         return $this->morphToMany(Config::get('cerberus.permission'), 'permissible',
@@ -208,13 +206,14 @@ trait CerberusSiteUserTrait
      *
      * @param $site
      *
-     * @return bool
      * @throws \Exception
+     *
+     * @return bool
      */
     public function validateSite($site)
     {
-        if ( ! $site) {
-            throw new \Exception("The site is required.");
+        if (!$site) {
+            throw new \Exception('The site is required.');
         }
 
         return true;
@@ -223,7 +222,7 @@ trait CerberusSiteUserTrait
     /**
      * Checks role(s) and permission(s).
      *
-     * @param string|array $roles Array of roles or comma separated string
+     * @param string|array $roles       Array of roles or comma separated string
      * @param string|array $permissions Array of permissions or comma separated string.
      * @param $site
      * @param array $options validate_all (true|false) or return_type (boolean|array|both)
@@ -235,22 +234,22 @@ trait CerberusSiteUserTrait
         $this->validateSite($site);
 
         // Convert string to array if that's what is passed in.
-        if ( ! is_array($roles)) {
+        if (!is_array($roles)) {
             $roles = explode(',', $roles);
         }
-        if ( ! is_array($permissions)) {
+        if (!is_array($permissions)) {
             $permissions = explode(',', $permissions);
         }
 
         // Set up default values and validate options.
-        if ( ! isset($options['validate_all'])) {
+        if (!isset($options['validate_all'])) {
             $options['validate_all'] = false;
         } else {
             if ($options['validate_all'] !== true && $options['validate_all'] !== false) {
                 throw new InvalidArgumentException();
             }
         }
-        if ( ! isset($options['return_type'])) {
+        if (!isset($options['return_type'])) {
             $options['return_type'] = 'boolean';
         } else {
             if ($options['return_type'] != 'boolean' &&
@@ -261,7 +260,7 @@ trait CerberusSiteUserTrait
         }
 
         // Loop through roles and permissions and check each.
-        $checkedRoles       = [];
+        $checkedRoles = [];
         $checkedPermissions = [];
         foreach ($roles as $role) {
             $checkedRoles[$role] = $this->hasRoleForSite($role, false, $site);
@@ -273,8 +272,8 @@ trait CerberusSiteUserTrait
         // If validate all and there is a false in either
         // Check that if validate all, then there should not be any false.
         // Check that if not validate all, there must be at least one true.
-        if (($options['validate_all'] && ! (in_array(false, $checkedRoles) || in_array(false, $checkedPermissions))) ||
-            ( ! $options['validate_all'] && (in_array(true, $checkedRoles) || in_array(true, $checkedPermissions)))) {
+        if (($options['validate_all'] && !(in_array(false, $checkedRoles) || in_array(false, $checkedPermissions))) ||
+            (!$options['validate_all'] && (in_array(true, $checkedRoles) || in_array(true, $checkedPermissions)))) {
             $validateAll = true;
         } else {
             $validateAll = false;
@@ -288,14 +287,13 @@ trait CerberusSiteUserTrait
         } else {
             return [$validateAll, ['roles' => $checkedRoles, 'permissions' => $checkedPermissions]];
         }
-
     }
 
     /**
      * Checks if the user has a role by its name for a site.
      *
-     * @param string|array $name Role name or array of role names.
-     * @param bool $requireAll All roles in the array are required.
+     * @param string|array $name       Role name or array of role names.
+     * @param bool         $requireAll All roles in the array are required.
      * @param $site
      *
      * @return bool
@@ -306,9 +304,9 @@ trait CerberusSiteUserTrait
             foreach ($name as $roleName) {
                 $hasRole = $this->hasRoleForSite($roleName, $site, $requireAll);
 
-                if ($hasRole && ! $requireAll) {
+                if ($hasRole && !$requireAll) {
                     return true;
-                } elseif ( ! $hasRole && $requireAll) {
+                } elseif (!$hasRole && $requireAll) {
                     return false;
                 }
             }
@@ -329,7 +327,7 @@ trait CerberusSiteUserTrait
     }
 
     /**
-     * Attach multiple roles to a user
+     * Attach multiple roles to a user.
      *
      * @param mixed $roles
      * @param $site
@@ -364,8 +362,8 @@ trait CerberusSiteUserTrait
             }
         }
 
-        if ( ! is_numeric($role)) {
-            throw new \Exception("Not a valid role id.");
+        if (!is_numeric($role)) {
+            throw new \Exception('Not a valid role id.');
         }
 
         $this->roles()->attach($role, [
@@ -390,17 +388,15 @@ trait CerberusSiteUserTrait
             return $this->attachPermissions($permission);
         }
 
-        if ($this->perms()->find($permission)){
+        if ($this->perms()->find($permission)) {
             $this->perms()->updateExistingPivot($permission, ['is_active' => $isActive]);
-        }else{
+        } else {
             $this->perms()->attach($permission, ['is_active' => $isActive]);
         }
 
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
-
-
     }
 
     /**
@@ -425,7 +421,7 @@ trait CerberusSiteUserTrait
             if (Cache::getStore() instanceof TaggableStore) {
                 Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
             }
-        }else{
+        } else {
             foreach ($this->cachedRoles() as $role) {
                 // Validate against the Permission table
                 foreach ($role->cachedPermissions() as $perm) {
@@ -455,7 +451,7 @@ trait CerberusSiteUserTrait
     }
 
     /**
-     * Detach multiple permissions from current user
+     * Detach multiple permissions from current user.
      *
      * @param mixed $permissions
      *
@@ -463,7 +459,7 @@ trait CerberusSiteUserTrait
      */
     public function detachPermissions($permissions = null)
     {
-        if ( ! $permissions) {
+        if (!$permissions) {
             $permissions = $this->perms()->get();
         }
 
@@ -473,16 +469,16 @@ trait CerberusSiteUserTrait
     }
 
     /**
-     * Detach multiple roles from a user
+     * Detach multiple roles from a user.
      *
      * @param mixed $roles
      * @param $site
      */
-    public function detachRolesForSite($roles = null, $site)
+    public function detachRolesForSite($roles, $site)
     {
         $this->validateSite($site);
 
-        if ( ! $roles) {
+        if (!$roles) {
             $roles = $this->roles()->where(Config::get('cerberus.site_foreign_key'), '=', $site)->get();
         }
 

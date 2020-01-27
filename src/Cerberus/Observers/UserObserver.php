@@ -2,7 +2,6 @@
 
 namespace Michalisantoniou6\Cerberus\Observers;
 
-
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -46,7 +45,7 @@ class UserObserver
      */
     public function deleting($user)
     {
-        if ( ! method_exists(Config::get('auth.model'), 'bootSoftDeletes')) {
+        if (!method_exists(Config::get('auth.model'), 'bootSoftDeletes')) {
             $user->roles()->sync([]);
         }
 

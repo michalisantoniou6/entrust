@@ -1,11 +1,12 @@
-<?php namespace Michalisantoniou6\Cerberus;
+<?php
+
+namespace Michalisantoniou6\Cerberus;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Console\Command;
@@ -34,13 +35,13 @@ class MigrationCommand extends Command
      */
     public function handle()
     {
-        $this->getLaravel()->view->addNamespace('cerberus', substr(__DIR__, 0, -8) . 'views');
+        $this->getLaravel()->view->addNamespace('cerberus', substr(__DIR__, 0, -8).'views');
 
-        $rolesTable          = Config::get('cerberus.roles_table');
-        $roleUserTable       = Config::get('cerberus.role_user_site_table');
-        $permissionsTable    = Config::get('cerberus.permissions_table');
+        $rolesTable = Config::get('cerberus.roles_table');
+        $roleUserTable = Config::get('cerberus.role_user_site_table');
+        $permissionsTable = Config::get('cerberus.permissions_table');
         $permissiblesTable = Config::get('cerberus.permissibles_table');
-        $sitesTable          = Config::get('cerberus.sites_table');
+        $sitesTable = Config::get('cerberus.sites_table');
 
         $userFK = Config::get('cerberus.user_foreign_key');
         $roleFK = Config::get('cerberus.role_foreign_key');
@@ -49,30 +50,27 @@ class MigrationCommand extends Command
         $this->line('');
         $this->info("Tables: $rolesTable, $roleUserTable, $permissionsTable, $permissiblesTable, $sitesTable");
 
-        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissiblesTable', '$sitesTable'" .
-                   " tables will be created in database/migrations directory";
+        $message = "A migration that creates '$rolesTable', '$roleUserTable', '$permissionsTable', '$permissiblesTable', '$sitesTable'".
+                   ' tables will be created in database/migrations directory';
 
         $this->comment($message);
         $this->line('');
 
-        if ($this->confirm("Proceed with the migration creation? [Yes|no]", "Yes")) {
-
+        if ($this->confirm('Proceed with the migration creation? [Yes|no]', 'Yes')) {
             $this->line('');
 
-            $this->info("Creating migration...");
+            $this->info('Creating migration...');
             if ($this->createMigration($rolesTable, $roleUserTable, $permissionsTable, $permissiblesTable,
                 $sitesTable, $userFK, $roleFK, $siteFK)) {
-
-                $this->info("Migration successfully created!");
+                $this->info('Migration successfully created!');
             } else {
                 $this->error(
-                    "Couldn't create migration.\n Check the write permissions" .
-                    " within the database/migrations directory."
+                    "Couldn't create migration.\n Check the write permissions".
+                    ' within the database/migrations directory.'
                 );
             }
 
             $this->line('');
-
         }
     }
 
@@ -93,21 +91,20 @@ class MigrationCommand extends Command
         $roleFK,
         $siteFK
     ) {
-        $migrationFile = base_path("/database/migrations") . "/" . date('Y_m_d_His') . "_cerberus_setup_tables.php";
+        $migrationFile = base_path('/database/migrations').'/'.date('Y_m_d_His').'_cerberus_setup_tables.php';
 
         //@todo: decide whether to keep this, or get user table from config
         $userModelName = Config::get('cerberus.user');
-        $userModel     = new $userModelName();
-        $usersTable    = $userModel->getTable();
-        $userKeyName   = $userModel->getKeyName();
-
+        $userModel = new $userModelName();
+        $usersTable = $userModel->getTable();
+        $userKeyName = $userModel->getKeyName();
 
         $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissiblesTable', 'usersTable',
             'userKeyName', 'sitesTable', 'userFK', 'roleFK', 'siteFK');
 
         $output = $this->getLaravel()->view->make('cerberus::generators.migration')->with($data)->render();
 
-        if ( ! file_exists($migrationFile) && $fs = fopen($migrationFile, 'x')) {
+        if (!file_exists($migrationFile) && $fs = fopen($migrationFile, 'x')) {
             fwrite($fs, $output);
             fclose($fs);
 

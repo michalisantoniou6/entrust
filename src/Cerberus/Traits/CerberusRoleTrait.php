@@ -1,16 +1,17 @@
-<?php namespace Michalisantoniou6\Cerberus\Traits;
+<?php
+
+namespace Michalisantoniou6\Cerberus\Traits;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Cache\TaggableStore;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 trait CerberusRoleTrait
 {
@@ -18,12 +19,14 @@ trait CerberusRoleTrait
     public function cachedPermissions()
     {
         $rolePrimaryKey = $this->primaryKey;
-        $cacheKey = 'cerberus_permissions_for_role_' . $this->$rolePrimaryKey;
+        $cacheKey = 'cerberus_permissions_for_role_'.$this->$rolePrimaryKey;
         if (Cache::getStore() instanceof TaggableStore) {
             return Cache::tags(Config::get('cerberus.permissibles_table'))->remember($cacheKey, Config::get('cache.ttl', 60), function () {
                 return $this->perms()->get();
             });
-        } else return $this->perms()->get();
+        } else {
+            return $this->perms()->get();
+        }
     }
 
     public function save(array $options = [])
@@ -34,6 +37,7 @@ trait CerberusRoleTrait
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
+
         return true;
     }
 
@@ -45,6 +49,7 @@ trait CerberusRoleTrait
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
+
         return true;
     }
 
@@ -56,6 +61,7 @@ trait CerberusRoleTrait
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('cerberus.permissibles_table'))->flush();
         }
+
         return true;
     }
 
@@ -69,11 +75,13 @@ trait CerberusRoleTrait
         return $this->belongsToMany(Config::get('cerberus.user'), Config::get('cerberus.role_user_site_table'), Config::get('cerberus.role_foreign_key'), Config::get('cerberus.user_foreign_key'));
     }
 
-    public function perms(){
+    public function perms()
+    {
         return $this->morphToMany(Config::get('cerberus.permission'), 'permissible', Config::get('cerberus.permissibles_table'), 'permissible_id', Config::get('cerberus.permission_foreign_key'))
                     ->withPivot(['is_active'])
                     ->withTimestamps();
     }
+
     /**
      * Boot the role model
      * Attach event listener to remove the many-to-many records when trying to delete
@@ -98,14 +106,13 @@ trait CerberusRoleTrait
     /**
      * Checks if the role has a permission by its name.
      *
-     * @param string|array $name Permission name or array of permission names.
-     * @param bool $requireAll All permissions in the array are required.
+     * @param string|array $name       Permission name or array of permission names.
+     * @param bool         $requireAll All permissions in the array are required.
      *
      * @return bool
      */
     public function hasPermission($name, $requireAll = false)
     {
-
         if (is_array($name)) {
             foreach ($name as $permissionName) {
                 $hasPermission = $this->hasPermission($permissionName);
@@ -207,7 +214,7 @@ trait CerberusRoleTrait
     }
 
     /**
-     * Detach multiple permissions from current role
+     * Detach multiple permissions from current role.
      *
      * @param mixed $permissions
      *
@@ -215,7 +222,9 @@ trait CerberusRoleTrait
      */
     public function detachPermissions($permissions = null)
     {
-        if (!$permissions) $permissions = $this->perms()->get();
+        if (!$permissions) {
+            $permissions = $this->perms()->get();
+        }
 
         foreach ($permissions as $permission) {
             $this->detachPermission($permission);

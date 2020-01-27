@@ -1,17 +1,17 @@
-<?php namespace Michalisantoniou6\Cerberus;
+<?php
+
+namespace Michalisantoniou6\Cerberus;
 
 /**
  * This class is the main entry point of cerberus. Usually the interaction
- * with this class will be done through the Cerberus Facade
+ * with this class will be done through the Cerberus Facade.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
-
 class Cerberus
 {
     /**
-     * Laravel application
+     * Laravel application.
      *
      * @var \Illuminate\Foundation\Application
      */
@@ -30,7 +30,7 @@ class Cerberus
     }
 
     /**
-     * Checks if the current user has a role by its name
+     * Checks if the current user has a role by its name.
      *
      * @param string $name Role name.
      *
@@ -46,7 +46,7 @@ class Cerberus
     }
 
     /**
-     * Check if the current user has a permission by its name
+     * Check if the current user has a permission by its name.
      *
      * @param string $permission Permission string.
      *
@@ -62,11 +62,11 @@ class Cerberus
     }
 
     /**
-     * Check if the current user has a role or permission by its name
+     * Check if the current user has a role or permission by its name.
      *
-     * @param array|string $roles            The role(s) needed.
-     * @param array|string $permissions      The permission(s) needed.
-     * @param array $options                 The Options.
+     * @param array|string $roles       The role(s) needed.
+     * @param array|string $permissions The permission(s) needed.
+     * @param array        $options     The Options.
      *
      * @return bool
      */
@@ -104,7 +104,7 @@ class Cerberus
      */
     public function routeNeedsRole($route, $roles, $result = null, $requireAll = true)
     {
-        $filterName  = is_array($roles) ? implode('_', $roles) : $roles;
+        $filterName = is_array($roles) ? implode('_', $roles) : $roles;
         $filterName .= '_'.substr(md5($route), 0, 6);
 
         $closure = function () use ($roles, $result, $requireAll) {
@@ -138,7 +138,7 @@ class Cerberus
      */
     public function routeNeedsPermission($route, $permissions, $result = null, $requireAll = true)
     {
-        $filterName  = is_array($permissions) ? implode('_', $permissions) : $permissions;
+        $filterName = is_array($permissions) ? implode('_', $permissions) : $permissions;
         $filterName .= '_'.substr(md5($route), 0, 6);
 
         $closure = function () use ($permissions, $result, $requireAll) {
@@ -173,12 +173,12 @@ class Cerberus
      */
     public function routeNeedsRoleOrPermission($route, $roles, $permissions, $result = null, $requireAll = false)
     {
-        $filterName  =      is_array($roles)       ? implode('_', $roles)       : $roles;
+        $filterName = is_array($roles) ? implode('_', $roles) : $roles;
         $filterName .= '_'.(is_array($permissions) ? implode('_', $permissions) : $permissions);
         $filterName .= '_'.substr(md5($route), 0, 6);
 
         $closure = function () use ($roles, $permissions, $result, $requireAll) {
-            $hasRole  = $this->hasRole($roles, $requireAll);
+            $hasRole = $this->hasRole($roles, $requireAll);
             $hasPerms = $this->hasPermission($permissions, $requireAll);
 
             if ($requireAll) {

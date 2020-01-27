@@ -2,7 +2,6 @@
 
 namespace Michalisantoniou6\Cerberus\Traits;
 
-
 use Illuminate\Support\Facades\Config;
 
 trait CerberusSiteTrait
@@ -17,5 +16,4 @@ trait CerberusSiteTrait
         return $this->belongsToMany(Config::get('cerberus.user'), Config::get('cerberus.role_user_site_table'),
             Config::get('cerberus.site_foreign_key'), Config::get('cerberus.user_foreign_key'));
     }
-
 }

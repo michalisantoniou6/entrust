@@ -1,11 +1,12 @@
-<?php namespace Michalisantoniou6\Cerberus;
+<?php
+
+namespace Michalisantoniou6\Cerberus;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 use Illuminate\Support\Facades\Config;
@@ -29,12 +30,12 @@ class CerberusServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/config.php' => config_path('cerberus.php'),
+            __DIR__.'/../config/config.php' => config_path('cerberus.php'),
         ]);
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                MigrationCommand::class
+                MigrationCommand::class,
             ]);
         }
 
@@ -43,19 +44,20 @@ class CerberusServiceProvider extends ServiceProvider
         $this->registerUserObserver();
     }
 
-    private function registerUserObserver() {
+    private function registerUserObserver()
+    {
         $userModel = app(Config::get('cerberus.user'));
         $userModel::observe(UserObserver::class);
     }
 
     /**
-     * Register the blade directives
+     * Register the blade directives.
      *
      * @return void
      */
     private function bladeDirectives()
     {
-        if ( ! class_exists('\Blade')) {
+        if (!class_exists('\Blade')) {
             return;
         }
 
@@ -65,7 +67,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endrole', function ($expression) {
-            return "<?php endif; // Cerberus::hasRole ?>";
+            return '<?php endif; // Cerberus::hasRole ?>';
         });
 
         \Blade::directive('permission', function ($expression) {
@@ -73,7 +75,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endpermission', function ($expression) {
-            return "<?php endif; // Cerberus::hasPermission ?>";
+            return '<?php endif; // Cerberus::hasPermission ?>';
         });
 
         // Call to Cerberus::ability
@@ -82,7 +84,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endability', function ($expression) {
-            return "<?php endif; // Cerberus::ability ?>";
+            return '<?php endif; // Cerberus::ability ?>';
         });
 
         //multi tenant
@@ -91,7 +93,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endroleforsite', function ($expression) {
-            return "<?php endif; // Cerberus::hasRoleForSite ?>";
+            return '<?php endif; // Cerberus::hasRoleForSite ?>';
         });
 
         \Blade::directive('permissionforsite', function ($expression) {
@@ -99,7 +101,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endpermissionforsite', function ($expression) {
-            return "<?php endif; // Cerberus::hasPermissionForSite ?>";
+            return '<?php endif; // Cerberus::hasPermissionForSite ?>';
         });
 
         // Call to Cerberus::ability
@@ -108,7 +110,7 @@ class CerberusServiceProvider extends ServiceProvider
         });
 
         \Blade::directive('endabilityforsite', function ($expression) {
-            return "<?php endif; // Cerberus::abilityForSite ?>";
+            return '<?php endif; // Cerberus::abilityForSite ?>';
         });
     }
 
@@ -160,7 +162,7 @@ class CerberusServiceProvider extends ServiceProvider
     private function mergeConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/config.php', 'cerberus'
+            __DIR__.'/../config/config.php', 'cerberus'
         );
     }
 

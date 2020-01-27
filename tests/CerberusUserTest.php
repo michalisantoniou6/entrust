@@ -21,7 +21,7 @@ class CerberusUserTest extends TestCase
         $app = m::mock('app')->shouldReceive('instance')->getMock();
 
         $this->facadeMocks['config'] = m::mock('config');
-        $this->facadeMocks['cache']  = m::mock('cache');
+        $this->facadeMocks['cache'] = m::mock('cache');
 
         Config::setFacadeApplication($app);
         Config::swap($this->facadeMocks['config']);
@@ -38,7 +38,7 @@ class CerberusUserTest extends TestCase
         |------------------------------------------------------------
         */
         $belongsToMany = new stdClass();
-        $user          = m::mock('HasRoleUser')->makePartial();
+        $user = m::mock('HasRoleUser')->makePartial();
 
         /*
         |------------------------------------------------------------
@@ -77,7 +77,7 @@ class CerberusUserTest extends TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user        = new HasRoleUser();
+        $user = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -88,7 +88,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(9)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(9)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(9)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(9)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(9)->andReturn(new ArrayStore());
 
         /*
         |------------------------------------------------------------
@@ -107,11 +107,11 @@ class CerberusUserTest extends TestCase
 
     protected function mockRole($roleName)
     {
-        $roleMock              = m::mock('Michalisantoniou6\Cerberus\Role');
-        $roleMock->name        = $roleName;
-        $roleMock->perms       = [];
+        $roleMock = m::mock('Michalisantoniou6\Cerberus\Role');
+        $roleMock->name = $roleName;
+        $roleMock->perms = [];
         $roleMock->permissions = [];
-        $roleMock->id          = 1;
+        $roleMock->id = 1;
 
         return $roleMock;
     }
@@ -133,7 +133,7 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user        = new HasRoleUser();
+        $user = new HasRoleUser();
         $user->roles = [$roleA, $roleB];
 
         /*
@@ -146,7 +146,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(11)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(11)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(11)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(11)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(11)->andReturn(new ArrayStore());
 
         /*
         |------------------------------------------------------------
@@ -166,10 +166,10 @@ class CerberusUserTest extends TestCase
 
     protected function mockPermission($permName)
     {
-        $permMock               = m::mock('Michalisantoniou6\Cerberus\Permission');
-        $permMock->name         = $permName;
+        $permMock = m::mock('Michalisantoniou6\Cerberus\Permission');
+        $permMock->name = $permName;
         $permMock->display_name = ucwords(str_replace('_', ' ', $permName));
-        $permMock->id           = 1;
+        $permMock->id = 1;
 
         return $permMock;
     }
@@ -189,7 +189,7 @@ class CerberusUserTest extends TestCase
 
         $role->perms = [$permA, $permB, $permC];
 
-        $user        = new HasRoleUser();
+        $user = new HasRoleUser();
         $user->roles = [$role];
 
         /*
@@ -201,7 +201,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(6)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(6)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(6)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(6)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(6)->andReturn(new ArrayStore());
 
         /*
         |------------------------------------------------------------
@@ -224,13 +224,13 @@ class CerberusUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA    = 'user_can_a';
-        $userPermNameB    = 'user_can_b';
-        $userPermNameC    = 'user_can_c';
+        $userPermNameA = 'user_can_a';
+        $userPermNameB = 'user_can_b';
+        $userPermNameC = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA    = 'UserRoleA';
-        $userRoleNameB    = 'UserRoleB';
+        $userRoleNameA = 'UserRoleA';
+        $userRoleNameB = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -244,9 +244,9 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA, $roleB];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA, $roleB];
+        $user->id = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -259,7 +259,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore());
 
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
@@ -347,13 +347,13 @@ class CerberusUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA    = 'user_can_a';
-        $userPermNameB    = 'user_can_b';
-        $userPermNameC    = 'user_can_c';
+        $userPermNameA = 'user_can_a';
+        $userPermNameB = 'user_can_b';
+        $userPermNameC = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA    = 'UserRoleA';
-        $userRoleNameB    = 'UserRoleB';
+        $userRoleNameA = 'UserRoleA';
+        $userRoleNameB = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -367,11 +367,10 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA, $roleB];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA, $roleB];
+        $user->id = 4;
         $user->primaryKey = 'id';
-
 
         /*
         |------------------------------------------------------------
@@ -383,7 +382,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore());
 
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
@@ -427,7 +426,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a role.
         $this->assertSame(
             [
@@ -452,7 +450,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a permission.
         $this->assertSame(
             [
@@ -476,7 +473,6 @@ class CerberusUserTest extends TestCase
                 ['validate_all' => true, 'return_type' => 'array']
             )
         );
-
 
         // Case: User lacks everything.
         $this->assertSame(
@@ -510,13 +506,13 @@ class CerberusUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA    = 'user_can_a';
-        $userPermNameB    = 'user_can_b';
-        $userPermNameC    = 'user_can_c';
+        $userPermNameA = 'user_can_a';
+        $userPermNameB = 'user_can_b';
+        $userPermNameC = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA    = 'UserRoleA';
-        $userRoleNameB    = 'UserRoleB';
+        $userRoleNameA = 'UserRoleA';
+        $userRoleNameB = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -530,9 +526,9 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA, $roleB];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA, $roleB];
+        $user->id = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -545,7 +541,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore());
 
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
@@ -595,7 +591,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a role.
         $this->assertSame(
             [
@@ -626,7 +621,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a permission.
         $this->assertSame(
             [
@@ -656,7 +650,6 @@ class CerberusUserTest extends TestCase
                 ['validate_all' => true, 'return_type' => 'both']
             )
         );
-
 
         // Case: User lacks everything.
         $this->assertSame(
@@ -706,9 +699,9 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA, $roleB];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA, $roleB];
+        $user->id = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -721,7 +714,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(8)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(8)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(8)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(8)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(8)->andReturn(new ArrayStore());
 
         $user->shouldReceive('hasRole')
              ->with(m::anyOf('UserRoleA', 'UserRoleB'), m::anyOf(true, false))
@@ -762,13 +755,13 @@ class CerberusUserTest extends TestCase
         | Set
         |------------------------------------------------------------
         */
-        $userPermNameA    = 'user_can_a';
-        $userPermNameB    = 'user_can_b';
-        $userPermNameC    = 'user_can_c';
+        $userPermNameA = 'user_can_a';
+        $userPermNameB = 'user_can_b';
+        $userPermNameC = 'user_can_c';
         $nonUserPermNameA = 'user_cannot_a';
         $nonUserPermNameB = 'user_cannot_b';
-        $userRoleNameA    = 'UserRoleA';
-        $userRoleNameB    = 'UserRoleB';
+        $userRoleNameA = 'UserRoleA';
+        $userRoleNameB = 'UserRoleB';
         $nonUserRoleNameA = 'NonUserRoleA';
         $nonUserRoleNameB = 'NonUserRoleB';
 
@@ -782,9 +775,9 @@ class CerberusUserTest extends TestCase
         $roleA->perms = [$permA];
         $roleB->perms = [$permB, $permC];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA, $roleB];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA, $roleB];
+        $user->id = 4;
         $user->primaryKey = 'id';
 
         /*
@@ -797,7 +790,7 @@ class CerberusUserTest extends TestCase
         Config::shouldReceive('get')->with('cerberus.role_user_site_table')->times(32)->andReturn('role_user');
         Config::shouldReceive('get')->with('cache.ttl')->times(32)->andReturn('1440');
         Cache::shouldReceive('tags->remember')->times(32)->andReturn($user->roles);
-        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore);
+        Cache::shouldReceive('getStore')->times(32)->andReturn(new ArrayStore());
 
         $user->shouldReceive('hasRole')
              ->with(m::anyOf($userRoleNameA, $userRoleNameB), m::anyOf(true, false))
@@ -830,7 +823,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a role.
         $this->assertSame(
             $user->ability(
@@ -844,7 +836,6 @@ class CerberusUserTest extends TestCase
             )
         );
 
-
         // Case: User lacks a permission.
         $this->assertSame(
             $user->ability(
@@ -857,7 +848,6 @@ class CerberusUserTest extends TestCase
                 ['validate_all' => false, 'return_type' => 'boolean']
             )
         );
-
 
         // Case: User lacks everything.
         $this->assertSame(
@@ -882,12 +872,12 @@ class CerberusUserTest extends TestCase
         */
         $permA = $this->mockPermission('manage_a');
 
-        $roleA        = $this->mockRole('RoleA');
+        $roleA = $this->mockRole('RoleA');
         $roleA->perms = [$permA];
 
-        $user             = m::mock('HasRoleUser')->makePartial();
-        $user->roles      = [$roleA];
-        $user->id         = 4;
+        $user = m::mock('HasRoleUser')->makePartial();
+        $user->roles = [$roleA];
+        $user->id = 4;
         $user->primaryKey = 'id';
 
         function isExceptionThrown(
@@ -936,7 +926,7 @@ class CerberusUserTest extends TestCase
         |------------------------------------------------------------
         */
         $roleObject = m::mock('Role');
-        $roleArray  = ['id' => 2];
+        $roleArray = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
 
@@ -978,7 +968,7 @@ class CerberusUserTest extends TestCase
         |------------------------------------------------------------
         */
         $roleObject = m::mock('Role');
-        $roleArray  = ['id' => 2];
+        $roleArray = ['id' => 2];
 
         $user = m::mock('HasRoleUser')->makePartial();
 
@@ -1001,7 +991,6 @@ class CerberusUserTest extends TestCase
         $user->shouldReceive('detach')
              ->with(3)
              ->once()->ordered();
-
 
         /*
         |------------------------------------------------------------
@@ -1087,7 +1076,7 @@ class CerberusUserTest extends TestCase
         $roleA = $this->mockRole('RoleA');
         $roleB = $this->mockRole('RoleB');
 
-        $user        = m::mock('HasRoleUser')->makePartial();
+        $user = m::mock('HasRoleUser')->makePartial();
         $user->roles = [$roleA, $roleB];
 
         $relationship = m::mock('BelongsToMany');
@@ -1116,7 +1105,6 @@ class CerberusUserTest extends TestCase
         |------------------------------------------------------------
         */
         $user->detachRoles();
-
     }
 }
 
@@ -1131,11 +1119,10 @@ class HasRoleUser implements CerberusUserInterface
     public function __construct()
     {
         $this->primaryKey = 'id';
-        $this->id         = 4;
+        $this->id = 4;
     }
 
     public function belongsToMany($role, $assignedRolesTable)
     {
-
     }
 }

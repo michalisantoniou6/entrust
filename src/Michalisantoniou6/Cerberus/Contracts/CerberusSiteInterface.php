@@ -2,7 +2,6 @@
 
 namespace Michalisantoniou6\Cerberus\Contracts;
 
-
 interface CerberusSiteInterface
 {
     /**

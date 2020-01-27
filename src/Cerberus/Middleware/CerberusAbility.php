@@ -1,11 +1,12 @@
-<?php namespace Michalisantoniou6\Cerberus\Middleware;
+<?php
+
+namespace Michalisantoniou6\Cerberus\Middleware;
 
 /**
  * This file is part of Cerberus,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Michalisantoniou6\Cerberus
  */
 
 use Closure;
@@ -31,10 +32,11 @@ class CerberusAbility
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param Closure $next
+     * @param Closure                  $next
      * @param $roles
      * @param $permissions
      * @param bool $validateAll
+     *
      * @return mixed
      */
     public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
@@ -51,7 +53,7 @@ class CerberusAbility
             $validateAll = filter_var($validateAll, FILTER_VALIDATE_BOOLEAN);
         }
 
-        if ($this->auth->guest() || !$request->user()->ability($roles, $permissions, [ 'validate_all' => $validateAll ])) {
+        if ($this->auth->guest() || !$request->user()->ability($roles, $permissions, ['validate_all' => $validateAll])) {
             abort(403);
         }
 
